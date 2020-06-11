@@ -1,10 +1,16 @@
 package colorutils
 
 import (
+	"errors"
 	"fmt"
 	"image/color"
 	"regexp"
 	"strings"
+)
+
+var (
+	// ErrBadColor 颜色格式错误
+	ErrBadColor = errors.New("Parsing of color failed, Bad Color")
 )
 
 const (
@@ -19,8 +25,8 @@ var (
 	hexRegex = regexp.MustCompile(hexRegexString)
 )
 
-// parseHEX 解析十六进制格式颜色
-func parseHEX(s string) (color.Color, error) {
+// ParseHEX 解析十六进制格式颜色
+func ParseHEX(s string) (color.Color, error) {
 
 	s = strings.ToLower(s)
 

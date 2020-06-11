@@ -1,4 +1,4 @@
-package resourcereader
+package imagegenerator
 
 import (
 	"io"
@@ -13,6 +13,9 @@ type protocolReader struct {
 	protocol string
 	open     func(url string) (io.ReadCloser, error)
 }
+
+// Resource 资源类型
+type Resource string
 
 var (
 	readerMu        sync.Mutex
@@ -42,8 +45,9 @@ func sniff(url string) protocolReader {
 	return protocolReader{}
 }
 
-// Open 打开资源获取读取器
-func Open(url string) (io.ReadCloser, error) {
+// Open 打开资源
+func (r Resource) Open() (io.ReadCloser, error) {
+	url := string(r)
 	p := sniff(url)
 	if p.protocol == "" {
 		return nil, ErrForNotSupportResource

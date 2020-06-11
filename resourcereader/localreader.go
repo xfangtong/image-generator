@@ -9,8 +9,8 @@ import (
 const localProtocol string = "local://"
 
 func localOpen(url string) (io.ReadCloser, error) {
-	url = strings.TrimPrefix(url, localProtocol)
-	return os.Open(url)
+	path := strings.TrimPrefix(url, localProtocol)
+	return os.Open(path)
 }
 
 func init() {

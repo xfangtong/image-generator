@@ -19,8 +19,8 @@ var (
 	rgbCapturePercentRegex = regexp.MustCompile(rgbCaptureRegexPercentString)
 )
 
-// parseRGB 解析RGB格式
-func parseRGB(s string) (color.Color, error) {
+// ParseRGB 解析RGB格式
+func ParseRGB(s string) (color.Color, error) {
 
 	s = strings.ToLower(s)
 

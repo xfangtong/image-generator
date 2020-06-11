@@ -19,8 +19,8 @@ var (
 	rgbaCapturePercentRegex = regexp.MustCompile(rgbaCaptureRegexPercentString)
 )
 
-// parseRGBA 解析RGBA格式
-func parseRGBA(s string) (color.Color, error) {
+// ParseRGBA 解析RGBA格式
+func ParseRGBA(s string) (color.Color, error) {
 
 	s = strings.ToLower(s)
 
