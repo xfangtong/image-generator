@@ -32,3 +32,9 @@ func parseColor(s string) (color.Color, error) {
 func (c Color) Parse() (color.Color, error) {
 	return parseColor(string(c))
 }
+
+// ParseNoError 颜色解析
+func (c Color) ParseNoError() color.Color {
+	color, _ := parseColor(string(c))
+	return color
+}

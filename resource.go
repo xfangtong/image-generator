@@ -35,7 +35,7 @@ func RegisterReader(protocol string, open func(url string) (io.ReadCloser, error
 }
 
 // Sniff determines the protocol of url.
-func sniff(url string) protocolReader {
+func sniffResource(url string) protocolReader {
 	protocols, _ := readerProtocols.Load().([]protocolReader)
 	for _, f := range protocols {
 		if strings.HasPrefix(url, f.protocol) {
@@ -48,7 +48,7 @@ func sniff(url string) protocolReader {
 // Open 打开资源
 func (r Resource) Open() (io.ReadCloser, error) {
 	url := string(r)
-	p := sniff(url)
+	p := sniffResource(url)
 	if p.protocol == "" {
 		return nil, ErrForNotSupportResource
 	}
