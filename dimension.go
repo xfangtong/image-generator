@@ -4,6 +4,7 @@ import (
 	"errors"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 // Dimension 尺寸
@@ -17,7 +18,11 @@ var (
 
 // Measure 计算实际值
 func (d Dimension) Measure(ref float64) (float64, error) {
-	s := string(d)
+	s := strings.ToLower(string(d))
+	// auto 值为-1
+	if s == "auto" {
+		return -1, nil
+	}
 	// 绝对值，直接返回
 	v, err := strconv.ParseFloat(s, 64)
 	if err == nil {
