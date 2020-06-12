@@ -16,6 +16,17 @@ var (
 	ErrInvalidHeight = errors.New("invalid hight")
 )
 
+type (
+	// DrawContext 上下文
+	DrawContext struct {
+		GraphicContext *draw2dimg.GraphicContext
+		Width          int
+		Height         int
+		CurrentLeft    int
+		CurrentTop     int
+	}
+)
+
 // GenerateImage 生成图像
 func GenerateImage(t ImageTemplate) (image.Image, error) {
 	if t.Width < 0 || (t.Width == 0 && t.Background == "") {
