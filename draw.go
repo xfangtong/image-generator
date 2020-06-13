@@ -7,6 +7,7 @@ import (
 	_ "image/png"  //注入解码
 
 	"github.com/llgcode/draw2d/draw2dimg"
+	igcolor "github.com/xfangtong/image-generator/color"
 )
 
 var (
@@ -70,7 +71,7 @@ func GenerateImage(t ImageTemplate) (image.Image, error) {
 
 	img2 := image.NewRGBA(image.Rect(0, 0, 150, 150))
 	gc2 := draw2dimg.NewGraphicContext(img2)
-	gc2.SetFillColor(Color("#00000000").ParseNoError())
+	gc2.SetFillColor(igcolor.Color("#00000000").ParseNoError())
 	gc2.Clear()
 	// gc2.BeginPath()
 	// gc2.MoveTo(0.0, 0.0)

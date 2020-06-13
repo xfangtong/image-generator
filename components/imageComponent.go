@@ -15,10 +15,10 @@ type (
 
 	// ImageComponent 图像组件
 	ImageComponent struct {
-		Component Component
 	}
 )
 
+// Draw 绘制
 func (c *ImageComponent) Draw(dc *DrawContext, config interface{}) error {
 	cd := config.(*ImageComponentDefine)
 	reader, err := cd.URL.Open()
@@ -37,6 +37,7 @@ func (c *ImageComponent) Draw(dc *DrawContext, config interface{}) error {
 	return nil
 }
 
+// Measure 测量
 func (c *ImageComponent) Measure(rect image.Rectangle, config interface{}) (image.Rectangle, error) {
 	cd := config.(*ImageComponentDefine)
 	reader, err := cd.URL.Open()
@@ -53,13 +54,11 @@ func (c *ImageComponent) Measure(rect image.Rectangle, config interface{}) (imag
 	return image.Rect(0, 0, cc.Width, cc.Height), nil
 }
 
+// ConfigType 配置类型
 func (c *ImageComponent) ConfigType() interface{} {
 	return &ImageComponentDefine{}
 }
 
-// Draw(c *DrawContext, config interface{}) error
-// 		Measure(rect image.Rectangle, config interface{}) (image.Rectangle, error)
-// 		ConfigType() interface{}
 func init() {
 	RegisterComponent("image", func() Component {
 		return &ImageComponent{}

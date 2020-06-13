@@ -33,6 +33,7 @@ var tcd = ComponentDefine{
 }
 
 func TestDrawContainCenter(t *testing.T) {
+
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
 	gc := draw2dimg.NewGraphicContext(bg)
 	gc.SetFillColor(color.Black)
