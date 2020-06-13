@@ -1,9 +1,9 @@
-package colorutils
+package color
 
 import (
 	"errors"
 	"fmt"
-	"image/color"
+	imgcolor "image/color"
 	"regexp"
 	"strings"
 )
@@ -26,7 +26,7 @@ var (
 )
 
 // ParseHEX 解析十六进制格式颜色
-func ParseHEX(s string) (color.Color, error) {
+func ParseHEX(s string) (imgcolor.Color, error) {
 
 	s = strings.ToLower(s)
 
@@ -49,5 +49,5 @@ func ParseHEX(s string) (color.Color, error) {
 		fmt.Sscanf(s, hexAlphaFormat, &r, &g, &b, &a)
 	}
 
-	return color.RGBA{R: r, G: g, B: b, A: a}, nil
+	return imgcolor.RGBA{R: r, G: g, B: b, A: a}, nil
 }

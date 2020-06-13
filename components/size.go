@@ -1,4 +1,4 @@
-package imagegenerator
+package components
 
 import (
 	"errors"
@@ -55,13 +55,13 @@ func (p Size) Parse(canvasRect image.Rectangle, imgRect image.Rectangle) (image.
 	}
 
 	if y == "auto" {
-		rect.Max.Y = canvasRect.Dx() + rect.Min.Y
+		rect.Max.Y = canvasRect.Dy() + rect.Min.Y
 	} else {
 		y1, err := Dimension(y).Measure(float64(imgRect.Dy()))
 		if err != nil {
 			return rect, err
 		}
-		rect.Max.X = int(y1 + float64(rect.Min.Y))
+		rect.Max.Y = int(y1 + float64(rect.Min.Y))
 	}
 
 	return rect, nil

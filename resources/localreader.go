@@ -1,4 +1,4 @@
-package resourcereader
+package resources
 
 import (
 	"io"

@@ -1,4 +1,4 @@
-package imagegenerator
+package components
 
 import (
 	"testing"

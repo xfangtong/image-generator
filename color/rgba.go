@@ -1,7 +1,7 @@
-package colorutils
+package color
 
 import (
-	"image/color"
+	imgcolor "image/color"
 	"math"
 	"regexp"
 	"strconv"
@@ -20,7 +20,7 @@ var (
 )
 
 // ParseRGBA 解析RGBA格式
-func ParseRGBA(s string) (color.Color, error) {
+func ParseRGBA(s string) (imgcolor.Color, error) {
 
 	s = strings.ToLower(s)
 
@@ -50,5 +50,5 @@ func ParseRGBA(s string) (color.Color, error) {
 		b = uint64(math.Floor(float64(b)/100*255 + .5))
 	}
 
-	return color.RGBA{R: uint8(r), G: uint8(g), B: uint8(b), A: uint8(a * 255)}, nil
+	return imgcolor.RGBA{R: uint8(r), G: uint8(g), B: uint8(b), A: uint8(a * 255)}, nil
 }

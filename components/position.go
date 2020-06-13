@@ -1,4 +1,4 @@
-package imagegenerator
+package components
 
 import (
 	"errors"
@@ -27,17 +27,31 @@ func (p Position) Parse(canvasRect image.Rectangle, imgRect image.Rectangle) (fl
 		y = vals[0]
 		x = vals[1]
 	}
+
 	y = strings.ToLower(y)
 	x = strings.ToLower(x)
 
 	y1, ok := yPosition[y]
-	if ok {
-		y = y1
+	xt, yt := x, y
+	if !ok {
+		y1, ok = xPosition[y]
+		if ok {
+			xt = y1
+		}
+	} else {
+		yt = y1
 	}
+
 	x1, ok := xPosition[x]
-	if ok {
-		x = x1
+	if !ok {
+		x1, ok = yPosition[x]
+		if ok {
+			yt = x1
+		}
+	} else {
+		xt = x1
 	}
+	x, y = xt, yt
 
 	dx := canvasRect.Dx() - imgRect.Dx()
 	dy := canvasRect.Dy() - imgRect.Dy()

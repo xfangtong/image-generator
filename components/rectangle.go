@@ -1,4 +1,4 @@
-package imagegenerator
+package components
 
 import "image"
 
@@ -17,23 +17,23 @@ func (r Rectangle) Parse(refRect image.Rectangle) (image.Rectangle, error) {
 
 	result := image.Rect(0, 0, 0, 0)
 
-	l, err := r.Left.Measure(float64(refRect.Min.X))
+	l, err := r.Left.Measure(float64(refRect.Dx()))
 	if err != nil {
 		return result, err
 	}
 	result.Min.X = int(l)
-	t, err := r.Top.Measure(float64(refRect.Min.Y))
+	t, err := r.Top.Measure(float64(refRect.Dy()))
 	if err != nil {
 		return result, err
 	}
 	result.Min.Y = int(t)
 
-	ri, err := r.Top.Measure(float64(refRect.Max.X))
+	ri, err := r.Right.Measure(float64(refRect.Dx()))
 	if err != nil {
 		return result, err
 	}
 	result.Max.X = int(ri)
-	bo, err := r.Top.Measure(float64(refRect.Max.Y))
+	bo, err := r.Bottom.Measure(float64(refRect.Dy()))
 	if err != nil {
 		return result, err
 	}

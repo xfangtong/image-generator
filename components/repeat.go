@@ -1,4 +1,4 @@
-package imagegenerator
+package components
 
 const (
 	// RepeatNO 默认不重复
