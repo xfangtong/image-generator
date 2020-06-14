@@ -26,11 +26,11 @@ var circle = ComponentDefine{
 	Size:            "contain",
 	Repeat:          RepeatNO,
 	Padding:         "0",
-	BackgroundColor: "#000000",
+	BackgroundColor: "#ffffff",
 	ComponentData: map[string]interface{}{
 		"fillColor":   "#ff0000",
 		"strokeColor": "#00ff00",
-		"lineWidth":   10,
+		"lineWidth":   0,
 		"radius":      50,
 	},
 }
@@ -39,11 +39,12 @@ func TestDrawCircleCenter(t *testing.T) {
 
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
 	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc.SetFillColor(color.White)
 	gc.Clear()
 
 	cd := circle
 	cd.Size = "100% 100%"
+	cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
 		GraphicContext: draw2dimg.NewGraphicContext(bg),

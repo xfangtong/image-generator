@@ -3,6 +3,8 @@ package components
 import (
 	"image"
 	"math"
+
+	"github.com/llgcode/draw2d"
 )
 
 type (
@@ -31,18 +33,18 @@ func (c *CircleComponent) Draw(dc *DrawContext, config interface{}) error {
 		return err
 	}
 
+	lw := float64(cd.ShapeComponentDefine.LineWidth)
 	gc := dc.GraphicContext
 	gc.Save()
-	gc.SetLineWidth(float64(cd.ShapeComponentDefine.LineWidth))
+	gc.SetLineWidth(lw)
 	gc.SetFillColor(fc)
 	gc.SetStrokeColor(sc)
+	gc.SetFillRule(draw2d.FillRuleWinding)
 	gc.BeginPath()
-	sx := cd.Radius
-	gc.MoveTo(float64(sx), float64(0))
-	gc.ArcTo(float64(sx), float64(0), float64(cd.Radius), float64(cd.Radius), (1/2)*math.Pi, (1/2)*math.Pi+math.Pi*2)
-	gc.Close()
-	gc.Stroke()
-	gc.Fill()
+
+	x := float64(cd.Radius) + lw/2.0
+	gc.ArcTo(float64(x), float64(x), float64(cd.Radius), float64(cd.Radius), 0, 2*math.Pi+math.Pi)
+	gc.FillStroke()
 
 	gc.Restore()
 
@@ -53,7 +55,7 @@ func (c *CircleComponent) Draw(dc *DrawContext, config interface{}) error {
 func (c *CircleComponent) Measure(rect image.Rectangle, config interface{}) (image.Rectangle, error) {
 	cd := config.(*CircleComponentDefine)
 
-	return image.Rect(0, 0, cd.Radius*2+cd.ShapeComponentDefine.LineWidth/2, cd.Radius*2+cd.ShapeComponentDefine.LineWidth/2), nil
+	return image.Rect(0, 0, cd.Radius*2+cd.ShapeComponentDefine.LineWidth, cd.Radius*2+cd.ShapeComponentDefine.LineWidth), nil
 }
 
 // ConfigType 配置类型
