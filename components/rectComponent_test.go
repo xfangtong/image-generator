@@ -13,8 +13,8 @@ import (
 	"github.com/llgcode/draw2d/draw2dimg"
 )
 
-var circle = ComponentDefine{
-	Type:  "circle",
+var rect = ComponentDefine{
+	Type:  "rect",
 	Level: 1,
 	Area: Rectangle{
 		Left:   "0",
@@ -26,25 +26,27 @@ var circle = ComponentDefine{
 	Size:            "contain",
 	Repeat:          RepeatNO,
 	Padding:         "0",
-	BackgroundColor: "#00ff00",
+	BackgroundColor: "#00ffff",
 	ComponentData: map[string]interface{}{
 		"fillColor":   "#ff0000",
 		"strokeColor": "#00ff00",
-		"lineWidth":   0,
-		"radius":      50,
+		"lineWidth":   1,
+		"Width":       150,
+		"Height":      100,
+		"Radius":      20,
 	},
 }
 
-func TestDrawCircleCenter(t *testing.T) {
+func TestDrawRectCenter(t *testing.T) {
 
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
 	gc := draw2dimg.NewGraphicContext(bg)
 	gc.SetFillColor(color.White)
 	gc.Clear()
 
-	cd := circle
+	cd := rect
 	cd.Size = "100% 100%"
-	cd.Repeat = RepeatXY
+	//cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
 		GraphicContext: draw2dimg.NewGraphicContext(bg),
@@ -56,7 +58,7 @@ func TestDrawCircleCenter(t *testing.T) {
 	}
 
 	dc.DrawComponent(cd)
-	f, _ := os.Create("../test/component_circle_center.png")
+	f, _ := os.Create("../test/component_rect_center.png")
 	png.Encode(f, bg)
 
 	f.Close()
