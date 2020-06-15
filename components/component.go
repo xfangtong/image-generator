@@ -54,10 +54,17 @@ type (
 	}
 )
 
-type componentItem struct {
-	name    string
-	creator func() Component
-}
+type (
+	componentItem struct {
+		name    string
+		creator func() Component
+	}
+	drawItem struct {
+		image    image.Image
+		drawRect image.Rectangle
+		bgRect   image.Rectangle
+	}
+)
 
 var (
 	componentMu sync.Mutex
@@ -92,12 +99,11 @@ func offsetRect(rect *image.Rectangle, x int, y int) {
 	rect.Max.Y = rect.Max.Y + y
 }
 
-// DrawComponent 绘制组件
-func (c *DrawContext) DrawComponent(component ComponentDefine) error {
+func (c *DrawContext) createComponentImage(component ComponentDefine) (drawItem, error) {
 	var err error = nil
 	componentDrawer := sniff(component.Type)
 	if componentDrawer.name != component.Type {
-		return fmt.Errorf("no support component type %s", component.Type)
+		return drawItem{}, fmt.Errorf("no support component type %s", component.Type)
 	}
 
 	drawer := componentDrawer.creator()
@@ -105,60 +111,16 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 	cBytes, _ := json.Marshal(component.ComponentData)
 	json.Unmarshal(cBytes, cConfig)
 
-	//parentRect := image.Rect(0, 0, c.Width, c.Height)
-
 	// 组件位置测量
 	rect, mRect, err := c.measureComponent(drawer, component, cConfig)
 	if err != nil {
-		return err
+		return drawItem{}, err
 	}
-
-	// autoX, autoY := false, false
-	// if rect.Min.X < 0 {
-	// 	rect.Min.X = c.CurrentLeft
-	// 	autoX = true
-	// }
-	// if rect.Min.Y < 0 {
-	// 	rect.Min.Y = c.CurrentTop
-	// 	autoY = true
-	// }
 
 	pdt, pdr, pdb, pdl, err := component.Padding.Parse(c.Width, c.Height)
 	if err != nil {
-		return err
+		return drawItem{}, err
 	}
-
-	// 测量组件尺寸
-	// mRect := image.Rect(0, 0, rect.Dx(), rect.Dy())
-	// if rect.Max.X < 0 {
-	// 	mRect.Max.X = c.Width - c.CurrentLeft
-	// }
-	// if rect.Max.Y < 0 {
-	// 	mRect.Max.Y = c.Height - c.CurrentTop
-	// }
-	// mRect, err = drawer.Measure(mRect, cConfig)
-	// if err != nil {
-	// 	return fmt.Errorf("component measure fail: %s", err.Error())
-	// }
-
-	// if rect.Max.X < 0 {
-	// 	rect.Max.X = rect.Min.X + mRect.Dx() + pdr + pdl
-	// }
-	// if rect.Max.Y < 0 {
-	// 	rect.Max.Y = rect.Min.Y + mRect.Dy() + pdt + pdb
-	// }
-
-	// // 需要由下级组件测量尺寸
-	// if rect.Max.X < 0 || rect.Max.Y < 0 {
-	// 	tmpRect := image.Rect(rect.Min.X, rect.Min.Y, rect.Max.X, rect.Max.Y)
-	// 	actualRect, err := drawer.Measure(tmpRect, component)
-	// 	if err != nil {
-	// 		return fmt.Errorf("component measure fail: %s", err.Error())
-	// 	}
-	// 	rect = actualRect
-	// 	rect.Max.X = rect.Max.X + pdr + pdl
-	// 	rect.Max.Y = rect.Max.Y + pdt + pdb
-	// }
 
 	// 绘制组件图像
 	cRect := image.Rect(0, 0, mRect.Dx(), mRect.Dy())
@@ -167,7 +129,7 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 
 	bgColor, err := component.BackgroundColor.Parse()
 	if err != nil {
-		return err
+		return drawItem{}, err
 	}
 
 	cgc := draw2dimg.NewGraphicContext(cImg)
@@ -180,38 +142,26 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 	// 实际绘制区域（扣除边距）
 	cDrawRect := image.Rect(rect.Min.X+pdl, rect.Min.Y+pdt, rect.Max.X-pdr, rect.Max.Y-pdb)
 
-	// if cDrawRect.Max.X > c.Width {
-	// 	if autoX && autoY {
-	// 		offsetRect(&cDrawRect, -cDrawRect.Min.X, cDrawRect.Dy())
-	// 		offsetRect(&rect, -rect.Min.X, rect.Dy())
-	// 	} else if autoY {
-	// 		offsetRect(&cDrawRect, 0, cDrawRect.Dy())
-	// 		offsetRect(&rect, 0, rect.Dy())
-	// 	}
-
-	// }
-
 	cContext := &DrawContext{GraphicContext: cgc, Image: cImg, Width: cDrawRect.Dx(), Height: cDrawRect.Dy(), CurrentLeft: 0, CurrentTop: 0}
 	err = drawer.Draw(cContext, cConfig)
 	if err != nil {
-		return err
+		return drawItem{}, err
 	}
 
 	// 组件实际尺寸
 	aRect, err := component.Size.Parse(cDrawRect, mRect)
 	if err != nil {
-		return err
+		return drawItem{}, err
 	}
 
 	// 外层画布（不含间距）
 	bgRect := image.Rect(0, 0, cDrawRect.Dx(), cDrawRect.Dy())
 	bgImg := image.NewRGBA(bgRect)
-	isNewImage := true
 
 	// 组件绘制区域
 	x, y, err := component.Position.Parse(bgRect, aRect)
 	if err != nil {
-		return err
+		return drawItem{}, err
 	}
 
 	// 缩放
@@ -248,16 +198,28 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 
 	}
 
-	if isNewImage {
-		c.GraphicContext.Save()
-		c.GraphicContext.SetFillColor(bgColor)
-		c.GraphicContext.ClearRect(rect.Min.X, rect.Min.Y, rect.Max.X, rect.Max.Y)
-		c.GraphicContext.Restore()
-		draw2dimg.DrawImage(bgImg, c.Image.(draw.Image), draw2d.NewTranslationMatrix(float64(pdl+rect.Min.X), float64(pdt+rect.Min.Y)), draw.Over, draw2dimg.LinearFilter)
-	}
-
 	c.CurrentLeft = rect.Max.X
 	c.CurrentTop = rect.Min.Y
+
+	return drawItem{image: bgImg, drawRect: cDrawRect, bgRect: rect}, nil
+
+}
+
+// DrawComponent 绘制组件
+func (c *DrawContext) DrawComponent(component ComponentDefine) error {
+
+	di, err := c.createComponentImage(component)
+	if err != nil {
+		return err
+	}
+
+	bgColor := component.BackgroundColor.ParseNoError()
+
+	c.GraphicContext.Save()
+	c.GraphicContext.SetFillColor(bgColor)
+	c.GraphicContext.ClearRect(di.bgRect.Min.X, di.bgRect.Min.Y, di.bgRect.Max.X, di.bgRect.Max.Y)
+	c.GraphicContext.Restore()
+	draw2dimg.DrawImage(di.image, c.Image.(draw.Image), draw2d.NewTranslationMatrix(float64(di.drawRect.Min.X), float64(di.drawRect.Min.Y)), draw.Over, draw2dimg.LinearFilter)
 
 	return nil
 }

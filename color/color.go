@@ -9,7 +9,7 @@ import (
 type Color string
 
 func parseColor(s string) (imgcolor.Color, error) {
-	if s == "" {
+	if s == "" || strings.ToLower(s) == "transparent" {
 		return imgcolor.Transparent, nil
 	}
 	if len(s) < 4 {

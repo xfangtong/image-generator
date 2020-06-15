@@ -2,8 +2,12 @@ package components
 
 import (
 	"image"
+	"image/draw"
 	"math"
 	"sort"
+
+	"github.com/llgcode/draw2d"
+	"github.com/llgcode/draw2d/draw2dimg"
 )
 
 type (
@@ -21,6 +25,7 @@ type (
 type componentDefineWrapper struct {
 	Item ComponentDefine
 	Seq  int
+	di   *drawItem
 }
 
 type componentList []componentDefineWrapper
@@ -42,19 +47,45 @@ func (c *GroupComponent) Draw(dc *DrawContext, config interface{}) error {
 	cd := config.(*GroupComponentDefine)
 	cs := cd.Components
 
-	clTemp := make([]componentDefineWrapper, 0)
+	levelMap := make(map[int][]*componentDefineWrapper)
+	levelList := make([]int, 0)
+	clTemp := make([]*componentDefineWrapper, 0)
 	for i, c := range cs {
-		clTemp = append(clTemp, componentDefineWrapper{Item: c, Seq: i})
+		wItem := &componentDefineWrapper{Item: c, Seq: i}
+		clTemp = append(clTemp, wItem)
+		m, b := levelMap[c.Level]
+		if !b {
+			m = make([]*componentDefineWrapper, 0)
+			levelList = append(levelList, c.Level)
+		}
+		levelMap[c.Level] = append(m, wItem)
 	}
-	cl := componentList(clTemp)
-	sort.Sort(cl)
 
-	for _, c := range cl {
-		err := dc.DrawComponent(c.Item)
+	for _, c := range clTemp {
+		di, err := dc.createComponentImage(c.Item)
 		if err != nil {
 			return err
 		}
+		c.di = &di
+	}
 
+	sort.Ints(levelList)
+
+	for _, l := range levelList {
+		items := levelMap[l]
+		for _, ci := range items {
+			bgColor, err := ci.Item.BackgroundColor.Parse()
+			if err != nil {
+				return err
+			}
+			di := ci.di
+			br, dr := di.bgRect, di.drawRect
+			dc.GraphicContext.Save()
+			dc.GraphicContext.SetFillColor(bgColor)
+			dc.GraphicContext.ClearRect(br.Min.X, br.Min.Y, br.Max.X, br.Max.Y)
+			draw2dimg.DrawImage(di.image, dc.Image.(draw.Image), draw2d.NewTranslationMatrix(float64(dr.Min.X), float64(dr.Min.Y)), draw.Over, draw2dimg.LinearFilter)
+			dc.GraphicContext.Restore()
+		}
 	}
 
 	return nil
