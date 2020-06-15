@@ -76,7 +76,7 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 }
 
 // Measure 测量
-func (c *RectComponent) Measure(rect image.Rectangle, config interface{}) (image.Rectangle, error) {
+func (c *RectComponent) Measure(dc *DrawContext, rect image.Rectangle, config interface{}) (image.Rectangle, error) {
 	cd := config.(*RectComponentDefine)
 
 	return image.Rect(0, 0, cd.Width, cd.Height), nil

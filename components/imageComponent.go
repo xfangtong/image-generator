@@ -38,7 +38,7 @@ func (c *ImageComponent) Draw(dc *DrawContext, config interface{}) error {
 }
 
 // Measure 测量
-func (c *ImageComponent) Measure(rect image.Rectangle, config interface{}) (image.Rectangle, error) {
+func (c *ImageComponent) Measure(dc *DrawContext, rect image.Rectangle, config interface{}) (image.Rectangle, error) {
 	cd := config.(*ImageComponentDefine)
 	reader, err := cd.URL.Open()
 	if err != nil {

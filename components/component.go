@@ -39,7 +39,7 @@ type (
 	// Component 组件接口
 	Component interface {
 		Draw(c *DrawContext, config interface{}) error
-		Measure(rect image.Rectangle, config interface{}) (image.Rectangle, error)
+		Measure(c *DrawContext, rect image.Rectangle, config interface{}) (image.Rectangle, error)
 		ConfigType() interface{}
 	}
 
@@ -101,52 +101,52 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 	}
 
 	drawer := componentDrawer.creator()
+	cConfig := drawer.ConfigType()
+	cBytes, _ := json.Marshal(component.ComponentData)
+	json.Unmarshal(cBytes, cConfig)
 
-	parentRect := image.Rect(0, 0, c.Width, c.Height)
-	// 组件在父级的位置
-	rect, err := component.Area.Parse(parentRect)
+	//parentRect := image.Rect(0, 0, c.Width, c.Height)
+
+	// 组件位置测量
+	rect, mRect, err := c.measureComponent(drawer, component, cConfig)
 	if err != nil {
 		return err
 	}
 
-	autoX, autoY := false, false
-	if rect.Min.X < 0 {
-		rect.Min.X = c.CurrentLeft
-		autoX = true
-	}
-	if rect.Min.Y < 0 {
-		rect.Min.Y = c.CurrentTop
-		autoY = true
-	}
+	// autoX, autoY := false, false
+	// if rect.Min.X < 0 {
+	// 	rect.Min.X = c.CurrentLeft
+	// 	autoX = true
+	// }
+	// if rect.Min.Y < 0 {
+	// 	rect.Min.Y = c.CurrentTop
+	// 	autoY = true
+	// }
 
 	pdt, pdr, pdb, pdl, err := component.Padding.Parse(c.Width, c.Height)
 	if err != nil {
 		return err
 	}
 
-	cConfig := drawer.ConfigType()
-	cBytes, _ := json.Marshal(component.ComponentData)
-	json.Unmarshal(cBytes, cConfig)
-
 	// 测量组件尺寸
-	mRect := image.Rect(0, 0, rect.Dx(), rect.Dy())
-	if rect.Max.X < 0 {
-		mRect.Max.X = c.Width - c.CurrentLeft
-	}
-	if rect.Max.Y < 0 {
-		mRect.Max.Y = c.Height - c.CurrentTop
-	}
-	mRect, err = drawer.Measure(mRect, cConfig)
-	if err != nil {
-		return fmt.Errorf("component measure fail: %s", err.Error())
-	}
+	// mRect := image.Rect(0, 0, rect.Dx(), rect.Dy())
+	// if rect.Max.X < 0 {
+	// 	mRect.Max.X = c.Width - c.CurrentLeft
+	// }
+	// if rect.Max.Y < 0 {
+	// 	mRect.Max.Y = c.Height - c.CurrentTop
+	// }
+	// mRect, err = drawer.Measure(mRect, cConfig)
+	// if err != nil {
+	// 	return fmt.Errorf("component measure fail: %s", err.Error())
+	// }
 
-	if rect.Max.X < 0 {
-		rect.Max.X = rect.Min.X + mRect.Dx() + pdr + pdl
-	}
-	if rect.Max.Y < 0 {
-		rect.Max.Y = rect.Min.Y + mRect.Dy() + pdt + pdb
-	}
+	// if rect.Max.X < 0 {
+	// 	rect.Max.X = rect.Min.X + mRect.Dx() + pdr + pdl
+	// }
+	// if rect.Max.Y < 0 {
+	// 	rect.Max.Y = rect.Min.Y + mRect.Dy() + pdt + pdb
+	// }
 
 	// // 需要由下级组件测量尺寸
 	// if rect.Max.X < 0 || rect.Max.Y < 0 {
@@ -177,21 +177,21 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 	cgc.Restore()
 
 	// 绘制组件
-	// 实际绘制区域
+	// 实际绘制区域（扣除边距）
 	cDrawRect := image.Rect(rect.Min.X+pdl, rect.Min.Y+pdt, rect.Max.X-pdr, rect.Max.Y-pdb)
 
-	if cDrawRect.Max.X > c.Width {
-		if autoX && autoY {
-			offsetRect(&cDrawRect, -cDrawRect.Min.X, cDrawRect.Dy())
-			offsetRect(&rect, -rect.Min.X, rect.Dy())
-		} else if autoY {
-			offsetRect(&cDrawRect, 0, cDrawRect.Dy())
-			offsetRect(&rect, 0, rect.Dy())
-		}
+	// if cDrawRect.Max.X > c.Width {
+	// 	if autoX && autoY {
+	// 		offsetRect(&cDrawRect, -cDrawRect.Min.X, cDrawRect.Dy())
+	// 		offsetRect(&rect, -rect.Min.X, rect.Dy())
+	// 	} else if autoY {
+	// 		offsetRect(&cDrawRect, 0, cDrawRect.Dy())
+	// 		offsetRect(&rect, 0, rect.Dy())
+	// 	}
 
-	}
+	// }
 
-	cContext := &DrawContext{GraphicContext: cgc, Width: cDrawRect.Dx(), Height: cDrawRect.Dy(), CurrentLeft: 0, CurrentTop: 0}
+	cContext := &DrawContext{GraphicContext: cgc, Image: cImg, Width: cDrawRect.Dx(), Height: cDrawRect.Dy(), CurrentLeft: 0, CurrentTop: 0}
 	err = drawer.Draw(cContext, cConfig)
 	if err != nil {
 		return err
@@ -203,6 +203,7 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 		return err
 	}
 
+	// 外层画布（不含间距）
 	bgRect := image.Rect(0, 0, cDrawRect.Dx(), cDrawRect.Dy())
 	bgImg := image.NewRGBA(bgRect)
 	isNewImage := true
@@ -255,5 +256,110 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 		draw2dimg.DrawImage(bgImg, c.Image.(draw.Image), draw2d.NewTranslationMatrix(float64(pdl+rect.Min.X), float64(pdt+rect.Min.Y)), draw.Over, draw2dimg.LinearFilter)
 	}
 
+	c.CurrentLeft = rect.Max.X
+	c.CurrentTop = rect.Min.Y
+
 	return nil
+}
+
+func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config interface{}) (image.Rectangle, image.Rectangle, error) {
+	var err error = nil
+
+	mr := image.Rect(0, 0, 0, 0)
+
+	parentRect := image.Rect(0, 0, c.Width, c.Height)
+	// 组件在父级的位置
+	rect, err := cd.Area.Parse(parentRect)
+	if err != nil {
+		return mr, mr, err
+	}
+
+	autoX, autoY := false, false
+	if rect.Min.X < 0 {
+		rect.Min.X = c.CurrentLeft
+		autoX = true
+	}
+	if rect.Min.Y < 0 {
+		rect.Min.Y = c.CurrentTop
+		autoY = true
+	}
+
+	pdt, pdr, pdb, pdl, err := cd.Padding.Parse(c.Width, c.Height)
+	if err != nil {
+		return mr, mr, err
+	}
+
+	cConfig := cp.ConfigType()
+	cBytes, _ := json.Marshal(cd.ComponentData)
+	json.Unmarshal(cBytes, cConfig)
+
+	// 测量组件尺寸
+	mRect := image.Rect(0, 0, 0, 0)
+	if rect.Max.X < 0 {
+		mRect.Max.X = c.Width - c.CurrentLeft
+	} else {
+		mRect.Max.X = rect.Dx()
+	}
+	if rect.Max.Y < 0 {
+		mRect.Max.Y = c.Height - c.CurrentTop
+	} else {
+		mRect.Max.Y = rect.Dy()
+	}
+
+	mRect, err = cp.Measure(c.Clone(), mRect, cConfig)
+	if err != nil {
+		return mr, mr, fmt.Errorf("component measure fail: %s", err.Error())
+	}
+
+	if rect.Max.X < 0 {
+		rect.Max.X = rect.Min.X + mRect.Dx() + pdr + pdl
+	}
+	if rect.Max.Y < 0 {
+		rect.Max.Y = rect.Min.Y + mRect.Dy() + pdt + pdb
+	}
+
+	if autoX && autoY && rect.Max.X > c.Width {
+		breakLine := false
+		if rect.Dx() <= c.Width {
+			breakLine = true
+		} else if rect.Min.X >= ((c.Width * 2) / 3) {
+			// x 坐标超过 2/3时需换行
+			breakLine = true
+		}
+
+		if breakLine {
+			offsetRect(&rect, -rect.Min.X, rect.Dy())
+		}
+	}
+
+	return rect, mRect, nil
+}
+
+// Clone 创建DrawContext副本
+func (c *DrawContext) Clone() *DrawContext {
+	return &DrawContext{
+		GraphicContext: c.GraphicContext,
+		Width:          c.Width,
+		Height:         c.Height,
+		Image:          c.Image,
+		CurrentLeft:    c.CurrentLeft,
+		CurrentTop:     c.CurrentTop,
+	}
+}
+
+// MeasureComponent 组件位置测量
+func (c *DrawContext) MeasureComponent(component ComponentDefine) (image.Rectangle, image.Rectangle, error) {
+
+	componentDrawer := sniff(component.Type)
+	if componentDrawer.name != component.Type {
+		return image.Rect(0, 0, 0, 0), image.Rect(0, 0, 0, 0), fmt.Errorf("no support component type %s", component.Type)
+	}
+
+	drawer := componentDrawer.creator()
+	cConfig := drawer.ConfigType()
+	cBytes, _ := json.Marshal(component.ComponentData)
+	json.Unmarshal(cBytes, cConfig)
+
+	// 组件位置测量
+	return c.measureComponent(drawer, component, cConfig)
 }

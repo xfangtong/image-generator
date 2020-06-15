@@ -52,7 +52,7 @@ func (c *CircleComponent) Draw(dc *DrawContext, config interface{}) error {
 }
 
 // Measure 测量
-func (c *CircleComponent) Measure(rect image.Rectangle, config interface{}) (image.Rectangle, error) {
+func (c *CircleComponent) Measure(dc *DrawContext, rect image.Rectangle, config interface{}) (image.Rectangle, error) {
 	cd := config.(*CircleComponentDefine)
 
 	return image.Rect(0, 0, cd.Radius*2, cd.Radius*2), nil
