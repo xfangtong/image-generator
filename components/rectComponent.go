@@ -15,8 +15,8 @@ type (
 		Width int
 		// Height 高度
 		Height int
-		// Radius 圆角
-		Radius int
+		// Radius 圆角 左上 右上 右下 左下 | 给定两个值：左上 右下 右上 左下 | 给定一个值： 四角相同
+		Radius Padding
 	}
 
 	// RectComponent 矩形
@@ -38,6 +38,11 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 		return err
 	}
 
+	lt, rt, rb, lb, err := cd.Radius.Parse(cd.Width, cd.Height)
+	if err != nil {
+		return nil
+	}
+
 	lw := float64(cd.ShapeComponentDefine.LineWidth)
 	gc := dc.GraphicContext
 	gc.Save()
@@ -47,28 +52,21 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 	gc.SetFillRule(draw2d.FillRuleWinding)
 	gc.BeginPath()
 
-	w, h, r := float64(cd.Width), float64(cd.Height), float64(cd.Radius)
+	w, h := float64(cd.Width), float64(cd.Height)
+	ltr, rtr, rbr, lbr := float64(lt), float64(rt), float64(rb), float64(lb)
 
-	gc.MoveTo(r, 0)
-	gc.LineTo(w-r, 0)
+	offsetLine := lw / 2.0
+	angle := math.Pi / 2.0
 
-	//
-	//r = r - lw
-	if r > 0 {
-		gc.ArcTo(w-r/2.0, r/2.0, r/2.0, r/2.0, (math.Pi/180.0)*270.0, 0)
-	}
-
-	//gc.LineTo(w, r)
-
-	gc.LineTo(w, h-r)
-
-	gc.LineTo(w-r, h)
-	gc.LineTo(r, h)
-
-	gc.LineTo(0, h-r)
-	gc.LineTo(0, r)
-
-	gc.LineTo(r, 0)
+	gc.MoveTo(ltr, offsetLine)
+	gc.LineTo(w-rtr, offsetLine)
+	gc.ArcTo(w-rtr, rtr, rtr-offsetLine, rtr-offsetLine, (math.Pi/2)*3, angle)
+	gc.LineTo(w-offsetLine, h-rbr)
+	gc.ArcTo(w-rbr, h-rbr, rbr-offsetLine, rbr-offsetLine, 0, angle)
+	gc.LineTo(lbr, h-offsetLine)
+	gc.ArcTo(lbr, h-lbr, lbr-offsetLine, lbr-offsetLine, math.Pi/2.0, angle)
+	gc.LineTo(offsetLine, ltr)
+	gc.ArcTo(ltr, ltr, ltr-offsetLine, ltr-offsetLine, math.Pi, angle)
 
 	gc.FillStroke()
 

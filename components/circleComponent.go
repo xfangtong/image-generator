@@ -43,7 +43,7 @@ func (c *CircleComponent) Draw(dc *DrawContext, config interface{}) error {
 	gc.BeginPath()
 
 	x := float64(cd.Radius)
-	gc.ArcTo(float64(x), float64(x), float64(cd.Radius)-lw, float64(cd.Radius)-lw, 0, 2*math.Pi)
+	gc.ArcTo(float64(x), float64(x), float64(cd.Radius)-lw/2, float64(cd.Radius)-lw/2, 0, 2*math.Pi)
 	gc.FillStroke()
 
 	gc.Restore()

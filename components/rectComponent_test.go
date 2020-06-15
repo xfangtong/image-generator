@@ -19,21 +19,21 @@ var rect = ComponentDefine{
 	Area: Rectangle{
 		Left:   "0",
 		Top:    "0",
-		Right:  "auto",
-		Bottom: "auto",
+		Right:  "100%",
+		Bottom: "100%",
 	},
 	Position:        "center",
 	Size:            "contain",
 	Repeat:          RepeatNO,
 	Padding:         "0",
-	BackgroundColor: "#00ffff",
+	BackgroundColor: "#000000",
 	ComponentData: map[string]interface{}{
 		"fillColor":   "#ff0000",
 		"strokeColor": "#00ff00",
 		"lineWidth":   1,
 		"Width":       150,
 		"Height":      100,
-		"Radius":      20,
+		"Radius":      "24",
 	},
 }
 
@@ -46,7 +46,7 @@ func TestDrawRectCenter(t *testing.T) {
 
 	cd := rect
 	cd.Size = "100% 100%"
-	//cd.Repeat = RepeatXY
+	cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
 		GraphicContext: draw2dimg.NewGraphicContext(bg),

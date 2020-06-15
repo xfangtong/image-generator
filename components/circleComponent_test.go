@@ -26,11 +26,11 @@ var circle = ComponentDefine{
 	Size:            "contain",
 	Repeat:          RepeatNO,
 	Padding:         "0",
-	BackgroundColor: "#00ff00",
+	BackgroundColor: "#000000",
 	ComponentData: map[string]interface{}{
 		"fillColor":   "#ff0000",
 		"strokeColor": "#00ff00",
-		"lineWidth":   0,
+		"lineWidth":   10,
 		"radius":      50,
 	},
 }
