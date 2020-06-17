@@ -80,11 +80,18 @@ func (c *GroupComponent) Draw(dc *DrawContext, config interface{}) error {
 			}
 			di := ci.di
 			br, dr := di.bgRect, di.drawRect
-			dc.GraphicContext.Save()
-			dc.GraphicContext.SetFillColor(bgColor)
-			dc.GraphicContext.ClearRect(br.Min.X, br.Min.Y, br.Max.X, br.Max.Y)
+			dc.GraphicContext.Push()
+			dc.GraphicContext.SetColor(bgColor)
+			dc.GraphicContext.DrawRectangle(float64(br.Min.X), float64(br.Min.Y), float64(br.Dx()), float64(br.Dy()))
+			dc.GraphicContext.Clip()
+			dc.GraphicContext.Fill()
+			dc.GraphicContext.Pop()
+			dc.Image = dc.GraphicContext.Image()
+			//dc.GraphicContext.Save()
+			//dc.GraphicContext.SetFillColor(bgColor)
+			//dc.GraphicContext.ClearRect(br.Min.X, br.Min.Y, br.Max.X, br.Max.Y)
 			draw2dimg.DrawImage(di.image, dc.Image.(draw.Image), draw2d.NewTranslationMatrix(float64(dr.Min.X), float64(dr.Min.Y)), draw.Over, draw2dimg.LinearFilter)
-			dc.GraphicContext.Restore()
+			//dc.GraphicContext.Restore()
 		}
 	}
 

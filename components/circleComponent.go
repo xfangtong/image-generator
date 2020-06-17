@@ -2,9 +2,8 @@ package components
 
 import (
 	"image"
-	"math"
 
-	"github.com/llgcode/draw2d"
+	"github.com/fogleman/gg"
 )
 
 type (
@@ -35,18 +34,28 @@ func (c *CircleComponent) Draw(dc *DrawContext, config interface{}) error {
 
 	lw := float64(cd.ShapeComponentDefine.LineWidth)
 	gc := dc.GraphicContext
-	gc.Save()
+
+	gc.Push()
+	gc.SetColor(fc)
 	gc.SetLineWidth(lw)
-	gc.SetFillColor(fc)
-	gc.SetStrokeColor(sc)
-	gc.SetFillRule(draw2d.FillRuleWinding)
-	gc.BeginPath()
+	// gc.SetFillColor(fc)
+	// gc.SetStrokeColor(sc)
+	// gc.SetFillRule(draw2d.FillRuleWinding)
+	// gc.BeginPath()
 
 	x := float64(cd.Radius)
-	gc.ArcTo(float64(x), float64(x), float64(cd.Radius)-lw/2, float64(cd.Radius)-lw/2, 0, 2*math.Pi)
-	gc.FillStroke()
+	gc.DrawCircle(x, x, x-lw/2)
 
-	gc.Restore()
+	//	gc.ArcTo(float64(x), float64(x), float64(cd.Radius)-lw/2, float64(cd.Radius)-lw/2, 0, 2*math.Pi)
+	gc.SetStrokeStyle(gg.NewSolidPattern(sc))
+	//	gc.Fill()
+	//gc.Stroke()
+	//gc.Fill()
+	gc.FillPreserve()
+	gc.StrokePreserve()
+	//	gc.FillStroke()
+
+	gc.Pop()
 
 	return nil
 }

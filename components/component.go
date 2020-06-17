@@ -8,6 +8,7 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/fogleman/gg"
 	"github.com/llgcode/draw2d"
 	"github.com/llgcode/draw2d/draw2dimg"
 	igcolor "github.com/xfangtong/image-generator/color"
@@ -45,7 +46,8 @@ type (
 
 	// DrawContext 上下文
 	DrawContext struct {
-		GraphicContext *draw2dimg.GraphicContext
+		//GraphicContext *draw2dimg.GraphicContext
+		GraphicContext *gg.Context
 		Image          image.Image
 		Width          int
 		Height         int
@@ -132,21 +134,23 @@ func (c *DrawContext) createComponentImage(component ComponentDefine) (drawItem,
 		return drawItem{}, err
 	}
 
-	cgc := draw2dimg.NewGraphicContext(cImg)
-	cgc.Save()
-	cgc.SetFillColor(bgColor)
+	cgc := gg.NewContextForRGBA(cImg)
+	cgc.Push()
+	cgc.SetColor(bgColor)
 	cgc.Clear()
-	cgc.Restore()
+	cgc.Pop()
 
 	// 绘制组件
 	// 实际绘制区域（扣除边距）
 	cDrawRect := image.Rect(rect.Min.X+pdl, rect.Min.Y+pdt, rect.Max.X-pdr, rect.Max.Y-pdb)
 
 	cContext := &DrawContext{GraphicContext: cgc, Image: cImg, Width: cDrawRect.Dx(), Height: cDrawRect.Dy(), CurrentLeft: 0, CurrentTop: 0}
+
 	err = drawer.Draw(cContext, cConfig)
 	if err != nil {
 		return drawItem{}, err
 	}
+	//cgc = cContext.GraphicContext
 
 	// 组件实际尺寸
 	aRect, err := component.Size.Parse(cDrawRect, mRect)
@@ -171,6 +175,7 @@ func (c *DrawContext) createComponentImage(component ComponentDefine) (drawItem,
 	if component.Repeat == RepeatNO {
 		m := draw2d.NewTranslationMatrix(float64(x), float64(y))
 		m.Scale(sx, sy)
+
 		draw2dimg.DrawImage(cImg, bgImg, m, draw.Over, draw2dimg.LinearFilter)
 	} else {
 		l, t := 0, 0
@@ -215,10 +220,14 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 
 	bgColor := component.BackgroundColor.ParseNoError()
 
-	c.GraphicContext.Save()
-	c.GraphicContext.SetFillColor(bgColor)
-	c.GraphicContext.ClearRect(di.bgRect.Min.X, di.bgRect.Min.Y, di.bgRect.Max.X, di.bgRect.Max.Y)
-	c.GraphicContext.Restore()
+	c.GraphicContext.Push()
+	c.GraphicContext.SetColor(bgColor)
+	c.GraphicContext.DrawRectangle(float64(di.bgRect.Min.X), float64(di.bgRect.Min.Y), float64(di.bgRect.Dx()), float64(di.bgRect.Dy()))
+	c.GraphicContext.SetColor(bgColor)
+	c.GraphicContext.Fill()
+	c.GraphicContext.Pop()
+	c.Image = c.GraphicContext.Image()
+
 	draw2dimg.DrawImage(di.image, c.Image.(draw.Image), draw2d.NewTranslationMatrix(float64(di.drawRect.Min.X), float64(di.drawRect.Min.Y)), draw.Over, draw2dimg.LinearFilter)
 
 	return nil

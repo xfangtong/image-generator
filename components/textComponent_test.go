@@ -1,12 +1,9 @@
 package components
 
 import (
-	"image"
 	"testing"
 
 	"github.com/go-playground/assert/v2"
-	"github.com/llgcode/draw2d"
-	"github.com/llgcode/draw2d/draw2dimg"
 )
 
 func TestSplitText(t *testing.T) {
@@ -36,15 +33,18 @@ func TestSplitText(t *testing.T) {
 }
 
 func TestMeasureText(t *testing.T) {
-	s := "a国 b\r\n家、🏠\t"
-	ms := splitText(s)
+	// s := "a国 b\r\n家、🏠\t"
+	// ms := splitText(s)
 
-	bg := image.NewRGBA(image.Rect(0, 0, 100, 100))
-	gc := draw2dimg.NewGraphicContext(bg)
+	//bg := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	//gc := draw2dimg.NewGraphicContext(bg)
 
-	draw2d.SetFontFolder("../fonts")
+	// draw2d.SetFontFolder("../fonts")
 
-	gc.SetFontSize(12)
+	// gc.SetFontSize(12)
 
-	measureText(gc, ms, 100)
+	// measureText(gc, ms, 100)
+
+	//g := exp..
+
 }

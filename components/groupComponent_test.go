@@ -10,7 +10,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
-	"github.com/llgcode/draw2d/draw2dimg"
+	"github.com/fogleman/gg"
 )
 
 var c1 = ComponentDefine{
@@ -127,8 +127,8 @@ var group = ComponentDefine{
 func TestDrawGroup(t *testing.T) {
 
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.White)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.White)
 	gc.Clear()
 
 	cd := group
@@ -136,7 +136,7 @@ func TestDrawGroup(t *testing.T) {
 	cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -146,7 +146,7 @@ func TestDrawGroup(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_group.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 

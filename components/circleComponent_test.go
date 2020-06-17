@@ -10,7 +10,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
-	"github.com/llgcode/draw2d/draw2dimg"
+	"github.com/fogleman/gg"
 )
 
 var circle = ComponentDefine{
@@ -19,8 +19,8 @@ var circle = ComponentDefine{
 	Area: Rectangle{
 		Left:   "0",
 		Top:    "0",
-		Right:  "auto",
-		Bottom: "auto",
+		Right:  "100%",
+		Bottom: "100%",
 	},
 	Position:        "center",
 	Size:            "contain",
@@ -38,8 +38,8 @@ var circle = ComponentDefine{
 func TestDrawCircleCenter(t *testing.T) {
 
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.White)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.White)
 	gc.Clear()
 
 	cd := circle
@@ -47,7 +47,7 @@ func TestDrawCircleCenter(t *testing.T) {
 	cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -57,7 +57,7 @@ func TestDrawCircleCenter(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_circle_center.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 

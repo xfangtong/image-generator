@@ -5,7 +5,6 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/llgcode/draw2d"
 	"github.com/llgcode/draw2d/draw2dimg"
 )
 
@@ -73,41 +72,41 @@ func measureText(gc *draw2dimg.GraphicContext, text [][]rune, w float64) {
 
 // Draw 绘制
 func (c *TextComponent) Draw(dc *DrawContext, config interface{}) error {
-	cd := config.(*TextComponentDefine)
+	// cd := config.(*TextComponentDefine)
 
-	var err error = nil
-	fc, err := cd.ShapeComponentDefine.FillColor.Parse()
-	if err != nil {
-		return err
-	}
-	sc, err := cd.ShapeComponentDefine.StrokeColor.Parse()
-	if err != nil {
-		return err
-	}
+	// var err error = nil
+	// fc, err := cd.ShapeComponentDefine.FillColor.Parse()
+	// if err != nil {
+	// 	return err
+	// }
+	// sc, err := cd.ShapeComponentDefine.StrokeColor.Parse()
+	// if err != nil {
+	// 	return err
+	// }
 
-	lw := float64(cd.ShapeComponentDefine.LineWidth)
-	gc := dc.GraphicContext
-	gc.Save()
-	gc.SetLineWidth(lw)
-	gc.SetFillColor(fc)
-	gc.SetStrokeColor(sc)
-	gc.SetFillRule(draw2d.FillRuleWinding)
-	gc.BeginPath()
+	//lw := float64(cd.ShapeComponentDefine.LineWidth)
+	//gc := dc.GraphicContext
+	// gc.Save()
+	// gc.SetLineWidth(lw)
+	// gc.SetFillColor(fc)
+	// gc.SetStrokeColor(sc)
+	// gc.SetFillRule(draw2d.FillRuleWinding)
+	// gc.BeginPath()
 
-	//x := float64(cd.Radius)
-	//gc.ArcTo(float64(x), float64(x), float64(cd.Radius)-lw/2, float64(cd.Radius)-lw/2, 0, 2*math.Pi)
-	gc.FillStroke()
+	// //x := float64(cd.Radius)
+	// //gc.ArcTo(float64(x), float64(x), float64(cd.Radius)-lw/2, float64(cd.Radius)-lw/2, 0, 2*math.Pi)
+	// gc.FillStroke()
 
-	gc.Restore()
+	// gc.Restore()
 
 	return nil
 }
 
 // Measure 测量
 func (c *TextComponent) Measure(dc *DrawContext, rect image.Rectangle, config interface{}) (image.Rectangle, error) {
-	td := config.(*TextComponentDefine)
-	dc.GraphicContext.Save()
-	dc.GraphicContext.SetFontSize(float64(td.FontSize))
+	//td := config.(*TextComponentDefine)
+	//dc.GraphicContext.Save()
+	//dc.GraphicContext.siz. SetFontSize(float64(td.FontSize))
 	dc.GraphicContext.MoveTo(0, 0)
 	// w, h := rect.Dx(), rect.Dy()
 	//w := float64(rect.Dx())

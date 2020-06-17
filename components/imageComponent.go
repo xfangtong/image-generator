@@ -32,7 +32,7 @@ func (c *ImageComponent) Draw(dc *DrawContext, config interface{}) error {
 		return err
 	}
 
-	dc.GraphicContext.DrawImage(cc)
+	dc.GraphicContext.DrawImage(cc, 0, 0)
 
 	return nil
 }

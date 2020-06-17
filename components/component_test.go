@@ -10,7 +10,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
-	"github.com/llgcode/draw2d/draw2dimg"
+	"github.com/fogleman/gg"
 )
 
 var tcd = ComponentDefine{
@@ -35,14 +35,14 @@ var tcd = ComponentDefine{
 func TestDrawContainCenter(t *testing.T) {
 
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -52,7 +52,7 @@ func TestDrawContainCenter(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_contain_center.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -60,15 +60,15 @@ func TestDrawContainCenter(t *testing.T) {
 
 func TestDrawCoverCenter(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
 	cd.Size = "cover"
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -78,7 +78,7 @@ func TestDrawCoverCenter(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_cover_center.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -86,15 +86,15 @@ func TestDrawCoverCenter(t *testing.T) {
 
 func TestDrawAutoCenter(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
 	cd.Size = "auto"
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -104,7 +104,7 @@ func TestDrawAutoCenter(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_auto_center.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -112,15 +112,15 @@ func TestDrawAutoCenter(t *testing.T) {
 
 func TestDraw100Center(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
 	cd.Size = "100% 100%"
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -130,7 +130,7 @@ func TestDraw100Center(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_100_center.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -138,8 +138,8 @@ func TestDraw100Center(t *testing.T) {
 
 func TestDraw100LeftTop(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
@@ -147,7 +147,7 @@ func TestDraw100LeftTop(t *testing.T) {
 	cd.Size = "100% 100%"
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -157,7 +157,7 @@ func TestDraw100LeftTop(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_100_lt.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -165,8 +165,8 @@ func TestDraw100LeftTop(t *testing.T) {
 
 func TestDraw100LeftBottom(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
@@ -174,7 +174,7 @@ func TestDraw100LeftBottom(t *testing.T) {
 	cd.Size = "100% 100%"
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -184,7 +184,7 @@ func TestDraw100LeftBottom(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_100_lb.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -192,8 +192,8 @@ func TestDraw100LeftBottom(t *testing.T) {
 
 func TestDraw100RightTop(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
@@ -201,7 +201,7 @@ func TestDraw100RightTop(t *testing.T) {
 	cd.Size = "100% 100%"
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -211,7 +211,7 @@ func TestDraw100RightTop(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_100_rt.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -219,8 +219,8 @@ func TestDraw100RightTop(t *testing.T) {
 
 func TestDraw100RightBottom(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
@@ -228,7 +228,7 @@ func TestDraw100RightBottom(t *testing.T) {
 	cd.Size = "100% 100%"
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -238,7 +238,7 @@ func TestDraw100RightBottom(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_100_rb.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -246,8 +246,8 @@ func TestDraw100RightBottom(t *testing.T) {
 
 func TestDraw100CenterRepeatX(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
@@ -256,7 +256,7 @@ func TestDraw100CenterRepeatX(t *testing.T) {
 	cd.Repeat = RepeatX
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -266,7 +266,7 @@ func TestDraw100CenterRepeatX(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_center_repeatx.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -274,8 +274,8 @@ func TestDraw100CenterRepeatX(t *testing.T) {
 
 func TestDraw100CenterRepeatY(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
@@ -284,7 +284,7 @@ func TestDraw100CenterRepeatY(t *testing.T) {
 	cd.Repeat = RepeatY
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -294,7 +294,7 @@ func TestDraw100CenterRepeatY(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_center_repeaty.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -302,8 +302,8 @@ func TestDraw100CenterRepeatY(t *testing.T) {
 
 func TestDraw100RepeatXY(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
@@ -312,7 +312,7 @@ func TestDraw100RepeatXY(t *testing.T) {
 	cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -322,7 +322,7 @@ func TestDraw100RepeatXY(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_repeatxy.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 
@@ -330,8 +330,8 @@ func TestDraw100RepeatXY(t *testing.T) {
 
 func TestDraw50PaddingRepeatXY(t *testing.T) {
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := draw2dimg.NewGraphicContext(bg)
-	gc.SetFillColor(color.Black)
+	gc := gg.NewContextForImage(bg)
+	gc.SetColor(color.Black)
 	gc.Clear()
 
 	cd := tcd
@@ -343,7 +343,7 @@ func TestDraw50PaddingRepeatXY(t *testing.T) {
 	cd.Area.Top = "20%"
 
 	dc := &DrawContext{
-		GraphicContext: draw2dimg.NewGraphicContext(bg),
+		GraphicContext: gc,
 		Image:          bg,
 		Width:          400,
 		Height:         500,
@@ -353,7 +353,7 @@ func TestDraw50PaddingRepeatXY(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_padding_repeatxy.png")
-	png.Encode(f, bg)
+	png.Encode(f, gc.Image())
 
 	f.Close()
 

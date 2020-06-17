@@ -2,9 +2,12 @@ package components
 
 import (
 	"image"
+	"image/draw"
 	"math"
 
+	"github.com/fogleman/gg"
 	"github.com/llgcode/draw2d"
+	"github.com/llgcode/draw2d/draw2dimg"
 )
 
 type (
@@ -44,7 +47,7 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 	}
 
 	lw := float64(cd.ShapeComponentDefine.LineWidth)
-	gc := dc.GraphicContext
+	gc := draw2dimg.NewGraphicContext(dc.Image.(draw.Image))
 	gc.Save()
 	gc.SetLineWidth(lw)
 	gc.SetFillColor(fc)
@@ -71,6 +74,8 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 	gc.FillStroke()
 
 	gc.Restore()
+
+	dc.GraphicContext = gg.NewContextForImage(dc.Image)
 
 	return nil
 }
