@@ -2,12 +2,8 @@ package components
 
 import (
 	"image"
-	"image/draw"
-	"math"
 
 	"github.com/fogleman/gg"
-	"github.com/llgcode/draw2d"
-	"github.com/llgcode/draw2d/draw2dimg"
 )
 
 type (
@@ -47,35 +43,41 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 	}
 
 	lw := float64(cd.ShapeComponentDefine.LineWidth)
-	gc := draw2dimg.NewGraphicContext(dc.Image.(draw.Image))
-	gc.Save()
+	//gc := draw2dimg.NewGraphicContext(dc.Image.(draw.Image))
+	gc := dc.GraphicContext
+	gc.Push()
 	gc.SetLineWidth(lw)
-	gc.SetFillColor(fc)
-	gc.SetStrokeColor(sc)
-	gc.SetFillRule(draw2d.FillRuleWinding)
-	gc.BeginPath()
+	gc.SetColor(fc)
+	gc.SetStrokeStyle(gg.NewSolidPattern(sc))
+	gc.SetFillRuleWinding()
+
+	// gc.Save()
+	// gc.SetLineWidth(lw)
+	// gc.SetFillColor(fc)
+	// gc.SetStrokeColor(sc)
+	// gc.SetFillRule(draw2d.FillRuleWinding)
+	// gc.BeginPath()
 
 	w, h := float64(cd.Width), float64(cd.Height)
 	ltr, rtr, rbr, lbr := float64(lt), float64(rt), float64(rb), float64(lb)
 
 	offsetLine := lw / 2.0
-	angle := math.Pi / 2.0
+	//angle := math.Pi / 2.0
 
 	gc.MoveTo(ltr, offsetLine)
 	gc.LineTo(w-rtr, offsetLine)
-	gc.ArcTo(w-rtr, rtr, rtr-offsetLine, rtr-offsetLine, (math.Pi/2)*3, angle)
+	gc.DrawArc(w-rtr, rtr, rtr-offsetLine, gg.Radians(270), gg.Radians(360))
 	gc.LineTo(w-offsetLine, h-rbr)
-	gc.ArcTo(w-rbr, h-rbr, rbr-offsetLine, rbr-offsetLine, 0, angle)
+	gc.DrawArc(w-rbr, h-rbr, rbr-offsetLine, 0, gg.Radians(90))
 	gc.LineTo(lbr, h-offsetLine)
-	gc.ArcTo(lbr, h-lbr, lbr-offsetLine, lbr-offsetLine, math.Pi/2.0, angle)
+	gc.DrawArc(lbr, h-lbr, lbr-offsetLine, gg.Radians(90), gg.Radians(180))
 	gc.LineTo(offsetLine, ltr)
-	gc.ArcTo(ltr, ltr, ltr-offsetLine, ltr-offsetLine, math.Pi, angle)
+	gc.DrawArc(ltr, ltr, ltr-offsetLine, gg.Radians(180), gg.Radians(270))
 
-	gc.FillStroke()
+	gc.FillPreserve()
+	gc.StrokePreserve()
 
-	gc.Restore()
-
-	dc.GraphicContext = gg.NewContextForImage(dc.Image)
+	gc.Pop()
 
 	return nil
 }

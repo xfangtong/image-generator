@@ -46,7 +46,7 @@ func TestDrawRectCenter(t *testing.T) {
 
 	cd := rect
 	cd.Size = "100% 100%"
-	cd.Repeat = RepeatXY
+	//	cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
 		GraphicContext: gc,
