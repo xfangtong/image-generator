@@ -28,14 +28,14 @@ var tcd = ComponentDefine{
 	Padding:         "0",
 	BackgroundColor: "#ff0000",
 	ComponentData: map[string]interface{}{
-		"URL": "local://../test/dog.jpg",
+		"URL": "local://../images/dog.png",
 	},
 }
 
 func TestDrawContainCenter(t *testing.T) {
 
 	bg := image.NewRGBA(image.Rect(0, 0, 400, 500))
-	gc := gg.NewContextForImage(bg)
+	gc := gg.NewContextForRGBA(bg)
 	gc.SetColor(color.Black)
 	gc.Clear()
 
@@ -52,7 +52,7 @@ func TestDrawContainCenter(t *testing.T) {
 
 	dc.DrawComponent(cd)
 	f, _ := os.Create("../test/component_contain_center.png")
-	png.Encode(f, gc.Image())
+	png.Encode(f, bg)
 
 	f.Close()
 
