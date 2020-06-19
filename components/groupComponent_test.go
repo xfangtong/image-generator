@@ -13,9 +13,9 @@ import (
 	"github.com/fogleman/gg"
 )
 
-var c1 = ComponentDefine{
-	Type:  "circle",
-	Level: 2,
+var a1 = ComponentDefine{
+	Type:  "avatar",
+	Level: 1,
 	Area: Rectangle{
 		Left:   "0",
 		Top:    "0",
@@ -25,84 +25,44 @@ var c1 = ComponentDefine{
 	Position:        "center",
 	Size:            "contain",
 	Repeat:          RepeatNO,
-	Padding:         "10 20 0 0",
-	BackgroundColor: "",
+	Padding:         "0",
+	BackgroundColor: "#000000",
+	ComponentData: map[string]interface{}{
+		"fillColor":   "transparent",
+		"strokeColor": "transparent",
+		"lineWidth":   10,
+		"width":       100,
+		"size":        "auto auto",
+		"url":         "local://../images/avatar.jpg",
+	},
+}
+
+var t1 = ComponentDefine{
+	Type:  "text",
+	Level: 1,
+	Area: Rectangle{
+		Left:   "auto",
+		Top:    "auto",
+		Right:  "auto",
+		Bottom: "auto",
+	},
+	Position:        "center",
+	Size:            "contain",
+	Repeat:          RepeatNO,
+	Padding:         "0",
+	BackgroundColor: "#000000",
 	ComponentData: map[string]interface{}{
 		"fillColor":   "#ff0000",
 		"strokeColor": "#00ff00",
-		"lineWidth":   10,
-		"radius":      50,
-	},
-}
-
-var c2 = ComponentDefine{
-	Type:  "circle",
-	Level: 1,
-	Area: Rectangle{
-		Left:   "50",
-		Top:    "50",
-		Right:  "auto",
-		Bottom: "auto",
-	},
-	Position:        "center",
-	Size:            "contain",
-	Repeat:          RepeatNO,
-	Padding:         "10 20 0 0",
-	BackgroundColor: "",
-	ComponentData: map[string]interface{}{
-		"fillColor":   "#ff0000",
-		"strokeColor": "#00ffff",
-		"lineWidth":   10,
-		"radius":      50,
-	},
-}
-
-var c3 = ComponentDefine{
-	Type:  "circle",
-	Level: 1,
-	Area: Rectangle{
-		Left:   "100",
-		Top:    "100",
-		Right:  "auto",
-		Bottom: "auto",
-	},
-	Position:        "center",
-	Size:            "contain",
-	Repeat:          RepeatNO,
-	Padding:         "10 20 0 0",
-	BackgroundColor: "",
-	ComponentData: map[string]interface{}{
-		"fillColor":   "#ffff00",
-		"strokeColor": "#00ff00",
-		"lineWidth":   10,
-		"radius":      50,
-	},
-}
-
-var c4 = ComponentDefine{
-	Type:  "circle",
-	Level: 3,
-	Area: Rectangle{
-		Left:   "150",
-		Top:    "150",
-		Right:  "auto",
-		Bottom: "auto",
-	},
-	Position:        "center",
-	Size:            "contain",
-	Repeat:          RepeatNO,
-	Padding:         "10 20 0 0",
-	BackgroundColor: "",
-	ComponentData: map[string]interface{}{
-		"fillColor":   "#ff4400",
-		"strokeColor": "#00ff00",
-		"lineWidth":   10,
-		"radius":      50,
+		"text":        "张三000err",
+		"fontPath":    "../fonts/zkgdh.ttf",
+		"fontSize":    24,
+		"lineHeight":  100,
 	},
 }
 
 var cl = []ComponentDefine{
-	c1, c2, c3, c4,
+	a1, t1,
 }
 
 var group = ComponentDefine{
@@ -132,8 +92,8 @@ func TestDrawGroup(t *testing.T) {
 	gc.Clear()
 
 	cd := group
-	cd.Size = "50% 50%"
-	cd.Repeat = RepeatXY
+	cd.Size = "100% 100%"
+	//cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
 		GraphicContext: gc,
