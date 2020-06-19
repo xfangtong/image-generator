@@ -111,7 +111,7 @@ func (c *GroupComponent) Measure(dc *DrawContext, rect image.Rectangle, config i
 		clTemp = append(clTemp, componentDefineWrapper{Item: c, Seq: i})
 	}
 	cl := componentList(clTemp)
-	sort.Sort(cl)
+	//sort.Sort(cl)
 
 	for _, c := range cl {
 		r1, _, err := dc.MeasureComponent(c.Item)

@@ -233,6 +233,9 @@ func (c *TextComponent) Measure(dc *DrawContext, rect image.Rectangle, config in
 	rt := image.Rect(0, 0, 0, 0)
 
 	w := rect.Dx()
+	if dc.AutoWidth {
+		w = math.MaxInt32
+	}
 	if w <= 0 {
 		return rt, fmt.Errorf("必须确定宽度")
 	}

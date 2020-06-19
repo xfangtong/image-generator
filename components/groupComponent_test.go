@@ -17,8 +17,8 @@ var a1 = ComponentDefine{
 	Type:  "avatar",
 	Level: 1,
 	Area: Rectangle{
-		Left:   "0",
-		Top:    "0",
+		Left:   "auto",
+		Top:    "auto",
 		Right:  "auto",
 		Bottom: "auto",
 	},
@@ -62,7 +62,7 @@ var t1 = ComponentDefine{
 }
 
 var cl = []ComponentDefine{
-	a1, t1,
+	a1, t1, t1, t1, t1, a1, t1, t1, t1, a1, a1,
 }
 
 var group = ComponentDefine{
@@ -92,8 +92,8 @@ func TestDrawGroup(t *testing.T) {
 	gc.Clear()
 
 	cd := group
-	cd.Size = "100% 100%"
-	//cd.Repeat = RepeatXY
+	cd.Size = "50% 50%"
+	cd.Repeat = RepeatXY
 
 	dc := &DrawContext{
 		GraphicContext: gc,

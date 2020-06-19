@@ -50,6 +50,8 @@ type (
 		Height         int
 		CurrentLeft    int
 		CurrentTop     int
+		AutoWidth      bool
+		AutoHeight     bool
 	}
 )
 
@@ -284,7 +286,11 @@ func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config 
 		mRect.Max.Y = rect.Dy()
 	}
 
-	mRect, err = cp.Measure(c.Clone(), mRect, cConfig)
+	nc := c.Clone()
+	nc.AutoHeight = autoY
+	nc.AutoWidth = autoX
+
+	mRect, err = cp.Measure(nc, mRect, cConfig)
 	if err != nil {
 		return mr, mr, fmt.Errorf("component measure fail: %s", err.Error())
 	}
