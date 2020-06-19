@@ -14,10 +14,10 @@ type (
 	// TextComponentDefine 文本组件
 	TextComponentDefine struct {
 		ShapeComponentDefine
-		Text       string
-		FontPath   string
-		FontSize   float64
-		LineHeight float64
+		Text       string  `json:"text"`
+		FontPath   string  `json:"fontPath"`
+		FontSize   float64 `json:"fontSize"`
+		LineHeight float64 `json:"lineHeight"`
 	}
 
 	// TextComponent 文本组件
