@@ -1,13 +1,18 @@
 package imagegenerator
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"image"
 	_ "image/jpeg" //注入解码
 	_ "image/png"  //注入解码
+	"strconv"
+	"text/template"
 
-	"github.com/llgcode/draw2d/draw2dimg"
-	igcolor "github.com/xfangtong/image-generator/color"
+	"github.com/fogleman/gg"
+	"github.com/xfangtong/image-generator/components"
 )
 
 var (
@@ -19,75 +24,137 @@ var (
 
 // GenerateImage 生成图像
 func GenerateImage(t ImageTemplate) (image.Image, error) {
-	if t.Width < 0 || (t.Width == 0 && t.Background == "") {
+	var err error = nil
+	var bgImg image.Config
+	hasBgImg := false
+	refW, refH := 0.0, 0.0
+	if t.Background != "" {
+		if bgReader, err := t.Background.Open(); err == nil {
+			if bgImg, _, err = image.DecodeConfig(bgReader); err != nil {
+				bgReader.Close()
+				return nil, err
+			}
+			bgReader.Close()
+			hasBgImg = true
+			refW = float64(bgImg.Width)
+			refH = float64(bgImg.Height)
+		} else {
+			return nil, err
+		}
+
+	}
+
+	w, err := t.Width.Measure(refW)
+	if err != nil || w <= 0 {
 		return nil, ErrInvalidWidth
 	}
-	if t.Height < 0 || (t.Height == 0 && t.Background == "") {
+	h, err := t.Height.Measure(refH)
+	if err != nil || h <= 0 {
 		return nil, ErrInvalidHeight
 	}
 
-	var backgroundImage image.Image = nil
-	if t.Background != "" {
-		biReader, err := t.Background.Open()
-		if err != nil {
-			return nil, err
-		}
-		defer biReader.Close()
-		backgroundImage, _, err = image.Decode(biReader)
-		if err != nil {
-			return nil, err
-		}
-		if t.Width == 0 {
-			t.Width = backgroundImage.Bounds().Dx()
-		}
-		if t.Height == 0 {
-			t.Height = backgroundImage.Bounds().Dy()
-		}
+	if (w == float64(components.AutoValue) || h == float64(components.AutoValue)) && !hasBgImg {
+		return nil, fmt.Errorf("当宽度或高度为自动时，必须指定背景图")
+	}
+	if w == float64(components.AutoValue) {
+		w = refW
+	}
+	if h == float64(components.AutoValue) {
+		h = refH
 	}
 
-	//w, h := float64(t.Width), float64(t.Height)
-
-	// 生成底图
-	imgRect := image.Rectangle{Min: image.Point{X: 0, Y: 0}, Max: image.Point{X: t.Width, Y: t.Height}}
+	imgRect := image.Rect(0, 0, int(w), int(h))
 	img := image.NewRGBA(imgRect)
+	gc := gg.NewContextForRGBA(img)
 
-	gc := draw2dimg.NewGraphicContext(img)
+	dw, dh := components.Dimension(strconv.FormatFloat(w, 'f', -1, 64)), components.Dimension(strconv.FormatFloat(h, 'f', -1, 64))
 
-	if t.BackgroundColor != "" {
-		bgColor, err := t.BackgroundColor.Parse()
-		if err != nil {
-			return nil, errors.New("invalid background color value")
+	bgDc := &components.DrawContext{
+		GraphicContext: gc,
+		Image:          img,
+		Width:          int(w),
+		Height:         int(h),
+		CurrentLeft:    0,
+		CurrentTop:     0,
+	}
+
+	bgColor, err := t.BackgroundColor.Parse()
+	if err != nil {
+		return nil, err
+	}
+	gc.SetColor(bgColor)
+	gc.Clear()
+
+	// 背景
+	if hasBgImg {
+		bgImgComponent := components.ComponentDefine{
+			Type:            "image",
+			BackgroundColor: t.BackgroundColor,
+			Size:            t.Size,
+			Position:        t.Position,
+			Padding:         t.BackgroundPadding,
+			Repeat:          t.Repeat,
+			Area: components.Rectangle{
+				Left:   "0",
+				Top:    "0",
+				Right:  dw,
+				Bottom: dh,
+			},
+			ComponentData: map[string]interface{}{
+				"url": t.Background,
+			},
 		}
-		gc.Save()
-		gc.SetFillColor(bgColor)
-		gc.Clear()
 
-		gc.Restore()
+		if err = bgDc.Clone().DrawComponent(bgImgComponent); err != nil {
+			return nil, err
+		}
 	}
 
-	if backgroundImage != nil {
-		//draw2dimg.DrawImage()
+	if len(t.Components) > 0 {
+		// 绘制组件
+		groupComponent := components.ComponentDefine{
+			Type:            "group",
+			BackgroundColor: "transparent",
+			Size:            "100% 100%",
+			Position:        "left top",
+			Repeat:          components.RepeatNO,
+			Padding:         t.Padding,
+			Area: components.Rectangle{
+				Left:   "0",
+				Top:    "0",
+				Right:  dw,
+				Bottom: dh,
+			},
+			ComponentData: map[string]interface{}{
+				"components": t.Components,
+			},
+		}
+		if err = bgDc.DrawComponent(groupComponent); err != nil {
+			return nil, err
+		}
 	}
-
-	img2 := image.NewRGBA(image.Rect(0, 0, 150, 150))
-	gc2 := draw2dimg.NewGraphicContext(img2)
-	gc2.SetFillColor(igcolor.Color("#00000000").ParseNoError())
-	gc2.Clear()
-	// gc2.BeginPath()
-	// gc2.MoveTo(0.0, 0.0)
-	// gc2.LineTo(150, 0)
-	// gc2.LineTo(150, 150)
-	// gc2.LineTo(0, 150)
-	// gc2.Close()
-	// gc2.Fill()
-
-	//gc2.SetFillColor(Color("#00FF00").ParseNoError())
-
-	//gc2.SetFontSize(24)
-	//gc2.FillString("HELLO World!")
-
-	//draw.Draw(img, image.Rect(0, 0, 150, 150), img2, image.Pt(0, 0), draw.Over)
-	//gc.Save()
 
 	return img, nil
+}
+
+//GenerateImageFromTemplate 从模版生成图像
+func GenerateImageFromTemplate(text string, values map[string]string) (image.Image, error) {
+	t := template.New("image-template")
+	tpl, err := t.Parse(text)
+	if err != nil {
+		return nil, err
+	}
+	buffer := new(bytes.Buffer)
+	err = tpl.Execute(buffer, values)
+	if err != nil {
+		return nil, err
+	}
+
+	imgTpl := &ImageTemplate{}
+	if err = json.Unmarshal(buffer.Bytes(), imgTpl); err != nil {
+		return nil, err
+	}
+
+	return GenerateImage(*imgTpl)
+
 }

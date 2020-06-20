@@ -2,6 +2,7 @@ package components
 
 import (
 	"errors"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -9,6 +10,9 @@ import (
 
 // Dimension 尺寸
 type Dimension string
+
+// AutoValue 自动值
+const AutoValue int = math.MaxInt32
 
 var (
 	regPercent *regexp.Regexp = regexp.MustCompile("^(.*)%$")
@@ -21,11 +25,26 @@ func (d Dimension) Measure(ref float64) (float64, error) {
 	s := strings.ToLower(string(d))
 	// auto 值为-1
 	if s == "auto" {
-		return -1, nil
+		return float64(AutoValue), nil
 	}
+
+	ext := 0
+	if strings.HasPrefix(s, "+") {
+		s = strings.TrimPrefix(s, "+")
+		ext = 1
+	}
+
+	if strings.HasPrefix(s, "-") {
+		s = strings.TrimPrefix(s, "-")
+		ext = -1
+	}
+
 	// 绝对值，直接返回
 	v, err := strconv.ParseFloat(s, 64)
 	if err == nil {
+		if ext != 0 {
+			return ref + float64(ext)*v, err
+		}
 		return v, err
 	}
 

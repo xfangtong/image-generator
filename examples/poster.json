@@ -1,0 +1,74 @@
+{
+	"position": "left top",
+	"repeat": "",
+	"size": "100% 100%",
+	"backgroundPadding": "",
+	"padding": "0",
+	"background": "{{ .url }}",
+	"backgroundColor": "#ffffff",
+	"width": "auto",
+	"height": "+160",
+	"components": [
+		{
+			"type": "avatar",
+			"level": 1,
+			"area": {
+				"left": "0",
+				"top": "1280",
+				"right": "150",
+				"bottom": "1440"
+			},
+			"position": "center",
+			"repeat": "",
+			"size": "100% 100%",
+			"padding": "",
+			"backgroundColor": "",
+			"componentData": {
+				"size": "contain",
+				"url": "{{ .avatar }}",
+				"width": 100
+			}
+		},
+		{
+			"type": "text",
+			"level": 1,
+			"area": {
+				"left": "150",
+				"top": "1280",
+				"right": "auto",
+				"bottom": "1440"
+			},
+			"position": "center",
+			"repeat": "",
+			"size": "100% 100%",
+			"padding": "",
+			"backgroundColor": "",
+			"componentData": {
+				"fillColor": "#03732A",
+				"fontPath": "./fonts/zkgdh.ttf",
+				"fontSize": 38,
+				"text": "{{ .name }} {{ .tel }}"
+			}
+		},
+		{
+			"type": "qrcode",
+			"level": 1,
+			"area": {
+				"left": "520",
+				"top": "1280",
+				"right": "720",
+				"bottom": "1440"
+			},
+			"position": "center",
+			"repeat": "",
+			"size": "100% 100%",
+			"padding": "",
+			"backgroundColor": "",
+			"componentData": {
+				"color": "#03732A",
+				"content": "{{ .name }} {{ .tel }}",
+				"width": 120
+			}
+		}
+	]
+}

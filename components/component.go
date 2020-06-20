@@ -255,11 +255,11 @@ func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config 
 	}
 
 	autoX, autoY := false, false
-	if rect.Min.X < 0 {
+	if rect.Min.X == AutoValue {
 		rect.Min.X = c.CurrentLeft
 		autoX = true
 	}
-	if rect.Min.Y < 0 {
+	if rect.Min.Y == AutoValue {
 		rect.Min.Y = c.CurrentTop
 		autoY = true
 	}
@@ -275,12 +275,12 @@ func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config 
 
 	// 测量组件尺寸
 	mRect := image.Rect(0, 0, 0, 0)
-	if rect.Max.X < 0 {
+	if rect.Max.X == AutoValue {
 		mRect.Max.X = c.Width - c.CurrentLeft
 	} else {
 		mRect.Max.X = rect.Dx()
 	}
-	if rect.Max.Y < 0 {
+	if rect.Max.Y == AutoValue {
 		mRect.Max.Y = c.Height - c.CurrentTop
 	} else {
 		mRect.Max.Y = rect.Dy()
@@ -295,10 +295,10 @@ func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config 
 		return mr, mr, fmt.Errorf("component measure fail: %s", err.Error())
 	}
 
-	if rect.Max.X < 0 {
+	if rect.Max.X == AutoValue {
 		rect.Max.X = rect.Min.X + mRect.Dx() + pdr + pdl
 	}
-	if rect.Max.Y < 0 {
+	if rect.Max.Y == AutoValue {
 		rect.Max.Y = rect.Min.Y + mRect.Dy() + pdt + pdb
 	}
 

@@ -80,6 +80,8 @@ func (c *AvatarComponent) Draw(dc *DrawContext, config interface{}) error {
 	gc.Scale(sx, sy)
 	gc.DrawImage(img, 0, 0)
 
+	gc.SavePNG("../test/a.png")
+
 	return err
 }
 

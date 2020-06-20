@@ -9,7 +9,7 @@ type (
 	LineComponentDefine struct {
 		ShapeComponentDefine
 		X int `json:"x"`
-		Y int `json:"y`
+		Y int `json:"y"`
 	}
 
 	// LineComponent 线条
