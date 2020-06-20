@@ -45,6 +45,7 @@ func (shape *ShapeComponentDefine) SetContextParameter(dc *DrawContext) error {
 	}
 
 	gc.SetStrokeStyle(gg.NewSolidPattern(sc))
+	gc.SetFillRuleWinding()
 
 	return err
 }

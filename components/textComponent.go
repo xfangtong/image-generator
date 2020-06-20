@@ -209,9 +209,8 @@ func (c *TextComponent) Draw(dc *DrawContext, config interface{}) error {
 		return err
 	}
 
-	if fc, err := cd.FillColor.Parse(); err == nil {
-		dc.GraphicContext.SetColor(fc)
-	} else {
+	err = cd.SetContextParameter(dc)
+	if err != nil {
 		return err
 	}
 

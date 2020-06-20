@@ -28,14 +28,6 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 	cd := config.(*RectComponentDefine)
 
 	var err error = nil
-	fc, err := cd.ShapeComponentDefine.FillColor.Parse()
-	if err != nil {
-		return err
-	}
-	sc, err := cd.ShapeComponentDefine.StrokeColor.Parse()
-	if err != nil {
-		return err
-	}
 
 	lt, rt, rb, lb, err := cd.Radius.Parse(cd.Width, cd.Height)
 	if err != nil {
@@ -43,26 +35,18 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 	}
 
 	lw := float64(cd.ShapeComponentDefine.LineWidth)
-	//gc := draw2dimg.NewGraphicContext(dc.Image.(draw.Image))
 	gc := dc.GraphicContext
 	gc.Push()
-	gc.SetLineWidth(lw)
-	gc.SetColor(fc)
-	gc.SetStrokeStyle(gg.NewSolidPattern(sc))
-	gc.SetFillRuleWinding()
-
-	// gc.Save()
-	// gc.SetLineWidth(lw)
-	// gc.SetFillColor(fc)
-	// gc.SetStrokeColor(sc)
-	// gc.SetFillRule(draw2d.FillRuleWinding)
-	// gc.BeginPath()
+	defer gc.Pop()
+	err = cd.SetContextParameter(dc)
+	if err != nil {
+		return err
+	}
 
 	w, h := float64(cd.Width), float64(cd.Height)
 	ltr, rtr, rbr, lbr := float64(lt), float64(rt), float64(rb), float64(lb)
 
 	offsetLine := lw / 2.0
-	//angle := math.Pi / 2.0
 
 	gc.MoveTo(ltr, offsetLine)
 	gc.LineTo(w-rtr, offsetLine)
@@ -76,8 +60,6 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 
 	gc.FillPreserve()
 	gc.StrokePreserve()
-
-	gc.Pop()
 
 	return nil
 }
