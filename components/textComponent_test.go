@@ -17,7 +17,7 @@ var text = ComponentDefine{
 	Area: Rectangle{
 		Left:   "0",
 		Top:    "0",
-		Right:  "200",
+		Right:  "100%",
 		Bottom: "100%",
 	},
 	Position:        "center",
@@ -27,13 +27,13 @@ var text = ComponentDefine{
 	BackgroundColor: "#000000",
 	ComponentData: map[string]interface{}{
 		//"fillColor": "#ff0000",
-		"fillColor": "linear-gradient(100% 0, #FF4E50 0%, #F9D423 100%)",
+		"fillColor": "linear-gradient(100% 0, #ec008c 0%, #fc6767 100%)",
 		//"strokeColor": "#00ff00",
 		//"lineWidth":   10,
-		"text":       "HELLO，\r\n你好，\r你在做什么？this is a long text begintextbegintextbegintextbegin",
-		"fontPath":   "../fonts/zkgdh.ttf",
-		"fontSize":   24,
-		"lineHeight": 32,
+		"text":     "HELLO，\r\n你好，\r你在做什么？this is a long text begintextbegintextbegintextbegin",
+		"fontPath": "../fonts/zkgdh.ttf",
+		"fontSize": 48,
+		//"lineHeight": 38,
 	},
 }
 

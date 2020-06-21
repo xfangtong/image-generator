@@ -30,7 +30,9 @@ var qc = ComponentDefine{
 	ComponentData: map[string]interface{}{
 		"width":   150,
 		"content": "hello world",
-		"color":   "#ff00ff",
+		//"color":   "#ff00ff",
+		//"color": "linear-gradient(100% 0, #ec008c 0%, #fc6767 100%)",
+		"color": "radial-gradient(75 75 10 75 75 200, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%)",
 	},
 }
 
