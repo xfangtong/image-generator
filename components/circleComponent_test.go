@@ -28,8 +28,8 @@ var circle = ComponentDefine{
 	Padding:         "0",
 	BackgroundColor: "#000000",
 	ComponentData: map[string]interface{}{
-		"fillColor":   "#ff0000",
-		"strokeColor": "#00ff00",
+		"fillColor":   "linear-gradient(100% 100%, #000000 0%, #e74c3c 100%)",
+		"strokeColor": "linear-gradient(100% 0, #B3FFAB 0%, #12FFF7 100%)",
 		"lineWidth":   10,
 		"radius":      50,
 	},

@@ -26,7 +26,7 @@ var avatar = ComponentDefine{
 	Size:            "contain",
 	Repeat:          RepeatNO,
 	Padding:         "0",
-	BackgroundColor: "#000000",
+	BackgroundColor: "linear-gradient(100% 100%, #000000 0%, #e74c3c 100%)",
 	ComponentData: map[string]interface{}{
 		"fillColor":   "transparent",
 		"strokeColor": "transparent",

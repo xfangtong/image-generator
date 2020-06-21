@@ -8,7 +8,6 @@ import (
 	"sync/atomic"
 
 	"github.com/fogleman/gg"
-	igcolor "github.com/xfangtong/image-generator/color"
 )
 
 type (
@@ -29,7 +28,7 @@ type (
 		// Padding 间隔空白
 		Padding Padding `json:"padding"`
 		// BackgroundColor 背景颜色
-		BackgroundColor igcolor.Color `json:"backgroundColor"`
+		BackgroundColor Gradient `json:"backgroundColor"`
 		// ComponentData 组件数据，根据组件类型具有不同的结构
 		ComponentData map[string]interface{} `json:"componentData"`
 	}
@@ -128,15 +127,18 @@ func (c *DrawContext) createComponentImage(component ComponentDefine) (drawItem,
 	// cImg := image.NewRGBA(cRect)
 	cImg := image.NewRGBA(cRect)
 
-	bgColor, err := component.BackgroundColor.Parse()
-	if err != nil {
-		return drawItem{}, err
-	}
+	// bgColor, err := component.BackgroundColor.Parse()
+	// if err != nil {
+	// 	return drawItem{}, err
+	// }
 
 	cgc := gg.NewContextForRGBA(cImg)
 	cgc.Push()
-	cgc.SetColor(bgColor)
-	cgc.Clear()
+	err = component.BackgroundColor.SetFill(cgc, float64(mRect.Dx()), float64(mRect.Dy()))
+	cgc.DrawRectangle(0, 0, float64(mRect.Dx()), float64(mRect.Dy()))
+	cgc.Fill()
+	//cgc.SetColor(bgColor)
+	//cgc.Clear()
 	cgc.Pop()
 
 	// 绘制组件
@@ -227,16 +229,21 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 		return err
 	}
 
-	bgColor := component.BackgroundColor.ParseNoError()
+	//bgColor := component.BackgroundColor.ParseNoError()
 
 	c.GraphicContext.Push()
-	c.GraphicContext.SetColor(bgColor)
+	defer c.GraphicContext.Pop()
+	err = component.BackgroundColor.SetFill(c.GraphicContext, float64(di.bgRect.Dx()), float64(di.bgRect.Dy()))
+	if err != nil {
+		return err
+	}
+	//c.GraphicContext.SetColor(bgColor)
 	c.GraphicContext.DrawRectangle(float64(di.bgRect.Min.X), float64(di.bgRect.Min.Y), float64(di.bgRect.Dx()), float64(di.bgRect.Dy()))
-	c.GraphicContext.SetColor(bgColor)
+	//c.GraphicContext.SetColor(bgColor)
 	c.GraphicContext.Fill()
 	c.GraphicContext.Translate(float64(di.drawRect.Min.X), float64(di.drawRect.Min.Y))
 	c.GraphicContext.DrawImage(di.image, 0, 0)
-	c.GraphicContext.Pop()
+	//c.GraphicContext.Pop()
 	c.Image = c.GraphicContext.Image()
 
 	return nil

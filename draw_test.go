@@ -13,12 +13,13 @@ func TestBackgroundRepeat(t *testing.T) {
 	tmp := ImageTemplate{
 		Width:           "400",
 		Height:          "500",
-		BackgroundColor: "#ff0000",
-		Background:      "local://./images/dog.png",
-		Repeat:          components.RepeatXY,
-		Size:            "100% 100%",
-		Padding:         "0",
-		Position:        "left top",
+		BackgroundColor: "linear-gradient(100% 0, #780206 0%, #061161 100%)",
+		//BackgroundColor: "rgba(255,0,0,1)",
+		Background: "local://./images/dog.png",
+		Repeat:     components.RepeatXY,
+		Size:       "100% 100%",
+		Padding:    "0",
+		Position:   "left top",
 	}
 
 	img, _ := GenerateImage(tmp)

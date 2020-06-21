@@ -8,6 +8,8 @@ import (
 // Color 颜色
 type Color string
 
+var ()
+
 func parseColor(s string) (imgcolor.Color, error) {
 	if s == "" || strings.ToLower(s) == "transparent" {
 		return imgcolor.Transparent, nil
@@ -27,6 +29,10 @@ func parseColor(s string) (imgcolor.Color, error) {
 	}
 
 	return nil, ErrBadColor
+}
+
+func (c Color) IsGradient() bool {
+	return false
 }
 
 // Parse 颜色解析

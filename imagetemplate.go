@@ -1,7 +1,6 @@
 package imagegenerator
 
 import (
-	igcolor "github.com/xfangtong/image-generator/color"
 	components "github.com/xfangtong/image-generator/components"
 	"github.com/xfangtong/image-generator/resources"
 )
@@ -22,7 +21,7 @@ type (
 		// Background 背景图片
 		Background resources.Resource `json:"background"`
 		// BackgroundColor 背景颜色
-		BackgroundColor igcolor.Color `json:"backgroundColor"`
+		BackgroundColor components.Gradient `json:"backgroundColor"`
 		// Width 宽度
 		Width components.Dimension `json:"width"`
 		// Height 高度

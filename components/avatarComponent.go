@@ -32,7 +32,7 @@ func (c *AvatarComponent) Draw(dc *DrawContext, config interface{}) error {
 	gc.Push()
 	defer gc.Pop()
 
-	err = cd.SetContextParameter(dc)
+	err = cd.SetContextParameter(dc, float64(cd.Width), float64(cd.Width))
 	if err != nil {
 		return err
 	}

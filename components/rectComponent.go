@@ -38,7 +38,7 @@ func (c *RectComponent) Draw(dc *DrawContext, config interface{}) error {
 	gc := dc.GraphicContext
 	gc.Push()
 	defer gc.Pop()
-	err = cd.SetContextParameter(dc)
+	err = cd.SetContextParameter(dc, float64(cd.Width), float64(cd.Height))
 	if err != nil {
 		return err
 	}

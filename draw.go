@@ -78,22 +78,24 @@ func GenerateImage(t ImageTemplate) (image.Image, error) {
 		CurrentTop:     0,
 	}
 
-	bgColor, err := t.BackgroundColor.Parse()
+	err = t.BackgroundColor.SetFill(gc, w, h)
 	if err != nil {
 		return nil, err
 	}
-	gc.SetColor(bgColor)
-	gc.Clear()
+	//gc.SetColor(bgColor)
+	//gc.Clear()
+	gc.DrawRectangle(0, 0, w, h)
+	gc.Fill()
 
 	// 背景
 	if hasBgImg {
 		bgImgComponent := components.ComponentDefine{
-			Type:            "image",
-			BackgroundColor: t.BackgroundColor,
-			Size:            t.Size,
-			Position:        t.Position,
-			Padding:         t.BackgroundPadding,
-			Repeat:          t.Repeat,
+			Type: "image",
+			//BackgroundColor: t.BackgroundColor,
+			Size:     t.Size,
+			Position: t.Position,
+			Padding:  t.BackgroundPadding,
+			Repeat:   t.Repeat,
 			Area: components.Rectangle{
 				Left:   "0",
 				Top:    "0",

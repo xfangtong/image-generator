@@ -29,7 +29,7 @@ var line = ComponentDefine{
 	BackgroundColor: "#000000",
 	ComponentData: map[string]interface{}{
 		"fillColor":   "#ff0000",
-		"strokeColor": "#00ff00",
+		"strokeColor": "linear-gradient(100% 100%, #000000 0%, #e74c3c 100%)",
 		"lineWidth":   1,
 		"x":           100,
 		"y":           10,

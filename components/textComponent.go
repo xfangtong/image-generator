@@ -3,6 +3,7 @@ package components
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"math"
 	"strings"
 	"unicode"
@@ -209,9 +210,19 @@ func (c *TextComponent) Draw(dc *DrawContext, config interface{}) error {
 		return err
 	}
 
-	err = cd.SetContextParameter(dc)
-	if err != nil {
-		return err
+	ig := cd.FillColor.IsGradient()
+
+	if ig {
+		// mask
+		dc.GraphicContext.SetColor(color.Transparent)
+		dc.GraphicContext.Clear()
+		dc.GraphicContext.SetRGB(0, 0, 0)
+	} else {
+		fc, err := cd.FillColor.GetColor()
+		if err != nil {
+			return err
+		}
+		dc.GraphicContext.SetColor(fc)
 	}
 
 	lines := c._drawItmes
@@ -219,6 +230,21 @@ func (c *TextComponent) Draw(dc *DrawContext, config interface{}) error {
 		for _, t := range l {
 			dc.GraphicContext.DrawString(t.text, t.x, t.y)
 		}
+	}
+
+	dc.GraphicContext.SavePNG("../test/1.png")
+
+	if ig {
+		mask := dc.GraphicContext.AsMask()
+		dc.GraphicContext.Clear()
+		err = cd.SetContextParameter(dc, c._w, c._h)
+		if err != nil {
+			return err
+		}
+		dc.GraphicContext.SetMask(mask)
+		dc.GraphicContext.DrawRectangle(0, 0, c._w, c._h)
+		dc.GraphicContext.Fill()
+
 	}
 
 	return err

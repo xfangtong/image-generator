@@ -50,7 +50,7 @@ var t1 = ComponentDefine{
 	Size:            "contain",
 	Repeat:          RepeatNO,
 	Padding:         "0",
-	BackgroundColor: "#000000",
+	BackgroundColor: "linear-gradient(100% 0, #B3FFAB 0%, #12FFF7 100%)",
 	ComponentData: map[string]interface{}{
 		"fillColor":   "#ff0000",
 		"strokeColor": "#00ff00",
@@ -78,7 +78,7 @@ var group = ComponentDefine{
 	Size:            "100% 100%",
 	Repeat:          RepeatNO,
 	Padding:         "10",
-	BackgroundColor: "#333",
+	BackgroundColor: "linear-gradient(100% 0, #780206 0%, #061161 100%)",
 	ComponentData: map[string]interface{}{
 		"components": cl,
 	},

@@ -26,7 +26,7 @@ func (c *LineComponent) Draw(dc *DrawContext, config interface{}) error {
 
 	gc.Push()
 	defer gc.Pop()
-	if err = cd.SetContextParameter(dc); err != nil {
+	if err = cd.SetContextParameter(dc, float64(cd.X), float64(cd.Y)); err != nil {
 		return err
 	}
 

@@ -74,18 +74,21 @@ func (c *GroupComponent) Draw(dc *DrawContext, config interface{}) error {
 	for _, l := range levelList {
 		items := levelMap[l]
 		for _, ci := range items {
-			bgColor, err := ci.Item.BackgroundColor.Parse()
-			if err != nil {
-				return err
-			}
+			//bgColor, err := ci.Item.BackgroundColor.Parse()
+
 			di := ci.di
 			br, dr := di.bgRect, di.drawRect
 			dc.GraphicContext.Push()
-			dc.GraphicContext.SetColor(bgColor)
+			defer dc.GraphicContext.Pop()
+			err := ci.Item.BackgroundColor.SetFill(dc.GraphicContext, float64(br.Dx()), float64(br.Dy()))
+			if err != nil {
+				return err
+			}
+			// dc.GraphicContext.SetColor(bgColor)
 			dc.GraphicContext.DrawRectangle(float64(br.Min.X), float64(br.Min.Y), float64(br.Dx()), float64(br.Dy()))
 			dc.GraphicContext.Clip()
 			dc.GraphicContext.Fill()
-			dc.GraphicContext.Pop()
+			//	dc.GraphicContext.Pop()
 			dc.Image = dc.GraphicContext.Image()
 			//dc.GraphicContext.Save()
 			//dc.GraphicContext.SetFillColor(bgColor)

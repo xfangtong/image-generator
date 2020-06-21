@@ -26,13 +26,14 @@ var text = ComponentDefine{
 	Padding:         "0",
 	BackgroundColor: "#000000",
 	ComponentData: map[string]interface{}{
-		"fillColor":   "#ff0000",
-		"strokeColor": "#00ff00",
-		"lineWidth":   10,
-		"text":        "HELLO，\r\n你好，\r你在做什么？this is a long text begintextbegintextbegintextbegin",
-		"fontPath":    "../fonts/zkgdh.ttf",
-		"fontSize":    24,
-		"lineHeight":  32,
+		//"fillColor": "#ff0000",
+		"fillColor": "linear-gradient(100% 0, #FF4E50 0%, #F9D423 100%)",
+		//"strokeColor": "#00ff00",
+		//"lineWidth":   10,
+		"text":       "HELLO，\r\n你好，\r你在做什么？this is a long text begintextbegintextbegintextbegin",
+		"fontPath":   "../fonts/zkgdh.ttf",
+		"fontSize":   24,
+		"lineHeight": 32,
 	},
 }
 
