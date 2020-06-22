@@ -25,14 +25,17 @@ var qc = ComponentDefine{
 	Position:        "center",
 	Size:            "contain",
 	Repeat:          RepeatNO,
-	Padding:         "0",
+	Padding:         "10",
 	BackgroundColor: "#000000",
 	ComponentData: map[string]interface{}{
-		"width":   150,
-		"content": "hello world",
+		"width":    150,
+		"content":  "这是一个带LOGO的二维码，这是一个带LOGO的二维码，这是一个带LOGO的二维码，这是一个带LOGO的二维码，这是一个带LOGO的二维码，这是一个带LOGO的二维码，这是一个带LOGO的二维码",
+		"logo":     "local://../images/avatar.jpg",
+		"logoSize": 48,
+		"isCircle": true,
 		//"color":   "#ff00ff",
 		//"color": "linear-gradient(100% 0, #ec008c 0%, #fc6767 100%)",
-		"color": "radial-gradient(75 75 10 75 75 200, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%)",
+		"color": "radial-gradient(75 75 0 75 75 200, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%)",
 	},
 }
 
@@ -43,8 +46,8 @@ func TestDrawQrcodeCenter(t *testing.T) {
 	gc.Clear()
 
 	cd := qc
-	cd.Size = "contain"
-	//cd.Repeat = RepeatXY
+	cd.Size = "100% 100%"
+	cd.Repeat = RepeatNO
 
 	dc := &DrawContext{
 		GraphicContext: gc,

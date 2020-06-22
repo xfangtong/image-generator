@@ -44,10 +44,11 @@
 			"padding": "",
 			"backgroundColor": "",
 			"componentData": {
-				"fillColor": "#03732A",
+				"fillColor": "linear-gradient(100% 0, #ec008c 0%, #fc6767 100%)",
 				"fontPath": "./fonts/zkgdh.ttf",
-				"fontSize": 38,
-				"text": "{{ .name }} {{ .tel }}"
+				"fontSize": 48,
+				"lineHeight": 52,
+				"text": "{{ .name }}\n{{ .tel }}"
 			}
 		},
 		{
@@ -65,9 +66,14 @@
 			"padding": "",
 			"backgroundColor": "",
 			"componentData": {
-				"color": "#03732A",
+				"color": "radial-gradient(75 75 0 75 75 200, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%)",
 				"content": "{{ .name }} {{ .tel }}",
-				"width": 120
+				"width": 120,
+				"logo":     "local://./images/avatar.jpg",
+				"logoSize": 32,
+				"circleBorderWidth": 5,
+				"circleBorderColor": "#ffffff",
+				"isCircle": true
 			}
 		}
 	]

@@ -64,7 +64,7 @@ func (c *AvatarComponent) Draw(dc *DrawContext, config interface{}) error {
 
 	cx, cy := float64(cd.Width)/2.0, float64(cd.Width)/2.0
 
-	gc.DrawCircle(cx, cy, cx-float64(cd.LineWidth/2))
+	gc.DrawCircle(cx, cy, cx-float64(cd.LineWidth))
 	gc.FillPreserve()
 	if cd.LineWidth > 0 {
 		gc.Stroke()

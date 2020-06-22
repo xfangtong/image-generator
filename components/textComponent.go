@@ -236,6 +236,7 @@ func (c *TextComponent) Draw(dc *DrawContext, config interface{}) error {
 
 	if ig {
 		mask := dc.GraphicContext.AsMask()
+		dc.GraphicContext.SetColor(color.Transparent)
 		dc.GraphicContext.Clear()
 		err = cd.SetContextParameter(dc, c._w, c._h)
 		if err != nil {
