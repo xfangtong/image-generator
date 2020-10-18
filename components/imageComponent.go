@@ -21,6 +21,11 @@ type (
 // Draw 绘制
 func (c *ImageComponent) Draw(dc *DrawContext, config interface{}) error {
 	cd := config.(*ImageComponentDefine)
+
+	gc := dc.GraphicContext
+	gc.Push()
+	defer gc.Pop()
+
 	reader, err := cd.URL.Open()
 	if err != nil {
 		return err
@@ -32,7 +37,10 @@ func (c *ImageComponent) Draw(dc *DrawContext, config interface{}) error {
 		return err
 	}
 
-	dc.GraphicContext.DrawImage(cc, 0, 0)
+	gc.DrawImage(cc, 0, 0)
+
+	gc.SavePNG("./test/imgxxxx.png")
+	//dc.GraphicContext.DrawImage(cc, 0, 0)
 
 	return nil
 }

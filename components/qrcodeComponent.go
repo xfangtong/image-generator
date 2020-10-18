@@ -128,7 +128,7 @@ func (c *QrcodeComponent) Draw(dc *DrawContext, config interface{}) error {
 		ctx := dc.Clone()
 		ctx.CurrentLeft = 0
 		ctx.CurrentTop = 0
-		err = ctx.DrawComponent(*logoComponent)
+		_, err = ctx.DrawComponent(*logoComponent)
 		if err != nil {
 			return err
 		}

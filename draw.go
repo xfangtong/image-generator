@@ -53,8 +53,14 @@ func GenerateImage(t ImageTemplate) (image.Image, error) {
 		return nil, ErrInvalidHeight
 	}
 
-	if (w == float64(components.AutoValue) || h == float64(components.AutoValue)) && !hasBgImg {
-		return nil, fmt.Errorf("当宽度或高度为自动时，必须指定背景图")
+	isAutoHeight := false
+	if w != float64(components.AutoValue) && h == float64(components.AutoValue) {
+		h = w * 10
+		isAutoHeight = true
+	}
+
+	if w == float64(components.AutoValue) && h == float64(components.AutoValue) {
+		return nil, fmt.Errorf("宽度和高度不可同时为auto")
 	}
 	if w == float64(components.AutoValue) {
 		w = refW
@@ -107,7 +113,7 @@ func GenerateImage(t ImageTemplate) (image.Image, error) {
 			},
 		}
 
-		if err = bgDc.Clone().DrawComponent(bgImgComponent); err != nil {
+		if _, err = bgDc.Clone().DrawComponent(bgImgComponent); err != nil {
 			return nil, err
 		}
 	}
@@ -131,8 +137,20 @@ func GenerateImage(t ImageTemplate) (image.Image, error) {
 				"components": t.Components,
 			},
 		}
-		if err = bgDc.DrawComponent(groupComponent); err != nil {
+		rect, err := bgDc.DrawComponent(groupComponent)
+		if err != nil {
 			return nil, err
+		}
+
+		if isAutoHeight {
+			_, _, b, _, _ := t.Padding.Parse(int(w), rect.Max.Y)
+			rect.Max.X = int(w)
+			rect.Max.Y = bgDc.ActualHeight + b
+
+			aImg := image.NewRGBA(rect)
+			agc := gg.NewContextForRGBA(aImg)
+			agc.DrawImage(bgDc.Image, 0, 0)
+			img = aImg
 		}
 	}
 
@@ -140,7 +158,7 @@ func GenerateImage(t ImageTemplate) (image.Image, error) {
 }
 
 //GenerateImageFromTemplate 从模版生成图像
-func GenerateImageFromTemplate(text string, values map[string]string) (image.Image, error) {
+func GenerateImageFromTemplate(text string, values map[string]interface{}) (image.Image, error) {
 	t := template.New("image-template")
 	tpl, err := t.Parse(text)
 	if err != nil {

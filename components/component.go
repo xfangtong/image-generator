@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"image"
+	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -43,14 +44,17 @@ type (
 	// DrawContext 上下文
 	DrawContext struct {
 		//GraphicContext *draw2dimg.GraphicContext
-		GraphicContext *gg.Context
-		Image          image.Image
-		Width          int
-		Height         int
-		CurrentLeft    int
-		CurrentTop     int
-		AutoWidth      bool
-		AutoHeight     bool
+		GraphicContext      *gg.Context
+		Image               image.Image
+		Width               int
+		Height              int
+		CurrentLeft         int
+		CurrentTop          int
+		LastComponentHeight int
+		ActualHeight        int
+		ActualWidth         int
+		AutoWidth           bool
+		AutoHeight          bool
 	}
 )
 
@@ -60,9 +64,10 @@ type (
 		creator func() Component
 	}
 	drawItem struct {
-		image    image.Image
-		drawRect image.Rectangle
-		bgRect   image.Rectangle
+		image      image.Image
+		drawRect   image.Rectangle
+		bgRect     image.Rectangle
+		actualRect image.Rectangle
 	}
 )
 
@@ -216,17 +221,19 @@ func (c *DrawContext) createComponentImage(component ComponentDefine) (drawItem,
 
 	c.CurrentLeft = rect.Max.X
 	c.CurrentTop = rect.Min.Y
+	c.ActualHeight = cContext.ActualHeight
+	c.ActualWidth = cContext.ActualWidth
 
-	return drawItem{image: bgImg, drawRect: cDrawRect, bgRect: rect}, nil
+	return drawItem{image: bgImg, drawRect: cDrawRect, bgRect: rect, actualRect: aRect}, nil
 
 }
 
 // DrawComponent 绘制组件
-func (c *DrawContext) DrawComponent(component ComponentDefine) error {
+func (c *DrawContext) DrawComponent(component ComponentDefine) (image.Rectangle, error) {
 
 	di, err := c.createComponentImage(component)
 	if err != nil {
-		return err
+		return di.actualRect, err
 	}
 
 	//bgColor := component.BackgroundColor.ParseNoError()
@@ -235,7 +242,7 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 	defer c.GraphicContext.Pop()
 	err = component.BackgroundColor.SetFill(c.GraphicContext, float64(di.bgRect.Dx()), float64(di.bgRect.Dy()))
 	if err != nil {
-		return err
+		return di.actualRect, err
 	}
 	//c.GraphicContext.SetColor(bgColor)
 	c.GraphicContext.DrawRectangle(float64(di.bgRect.Min.X), float64(di.bgRect.Min.Y), float64(di.bgRect.Dx()), float64(di.bgRect.Dy()))
@@ -246,7 +253,7 @@ func (c *DrawContext) DrawComponent(component ComponentDefine) error {
 	//c.GraphicContext.Pop()
 	c.Image = c.GraphicContext.Image()
 
-	return nil
+	return di.actualRect, nil
 }
 
 func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config interface{}) (image.Rectangle, image.Rectangle, error) {
@@ -269,6 +276,11 @@ func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config 
 	if rect.Min.Y == AutoValue {
 		rect.Min.Y = c.CurrentTop
 		autoY = true
+	}
+
+	if autoY && strings.HasPrefix(string(cd.Area.Bottom), "+") {
+		b := cd.Area.Bottom.MeasureNoError(float64(rect.Min.Y))
+		rect.Max.Y = int(b)
 	}
 
 	pdt, pdr, pdb, pdl, err := cd.Padding.Parse(c.Width, c.Height)
@@ -302,15 +314,27 @@ func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config 
 		return mr, mr, fmt.Errorf("component measure fail: %s", err.Error())
 	}
 
-	if rect.Max.X == AutoValue {
-		rect.Max.X = rect.Min.X + mRect.Dx() + pdr + pdl
+	sizeRect, isAbs := cd.Size.ParseAbsolute()
+	if rect.Max.X == AutoValue || isAbs {
+		if isAbs {
+			rect.Max.X = rect.Min.X + sizeRect.Dx() + pdr + pdl
+		} else {
+			rect.Max.X = rect.Min.X + mRect.Dx() + pdr + pdl
+		}
 	}
-	if rect.Max.Y == AutoValue {
-		rect.Max.Y = rect.Min.Y + mRect.Dy() + pdt + pdb
+	if rect.Max.Y == AutoValue || isAbs {
+		if isAbs {
+			rect.Max.Y = rect.Min.Y + sizeRect.Dy() + pdt + pdb
+		} else {
+			rect.Max.Y = rect.Min.Y + mRect.Dy() + pdt + pdb
+		}
 	}
 
-	if autoX && autoY && rect.Max.X > c.Width {
+	if autoY && (!autoX || rect.Max.X > c.Width) {
 		breakLine := false
+		if !autoX {
+			breakLine = true
+		}
 		if rect.Dx() <= c.Width {
 			breakLine = true
 		} else if rect.Min.X >= ((c.Width * 2) / 3) {
@@ -319,7 +343,7 @@ func (c *DrawContext) measureComponent(cp Component, cd ComponentDefine, config 
 		}
 
 		if breakLine {
-			offsetRect(&rect, -rect.Min.X, rect.Dy())
+			offsetRect(&rect, -rect.Min.X, c.LastComponentHeight)
 		}
 	}
 

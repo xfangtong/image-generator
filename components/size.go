@@ -4,6 +4,7 @@ import (
 	"errors"
 	"image"
 	"math"
+	"strconv"
 	"strings"
 )
 
@@ -66,6 +67,23 @@ func (p Size) Parse(canvasRect image.Rectangle, imgRect image.Rectangle) (image.
 
 	return rect, nil
 
+}
+
+// ParseAbsolute 绝对值Size
+func (p Size) ParseAbsolute() (image.Rectangle, bool) {
+	s := string(p)
+	rect := image.Rect(0, 0, 0, 0)
+	vals := strings.Split(s, " ")
+	if len(vals) == 2 {
+		fx, err1 := strconv.ParseFloat(vals[0], 64)
+		fy, err2 := strconv.ParseFloat(vals[1], 64)
+		if err1 == nil && err2 == nil {
+			rect.Max.X = int(fx)
+			rect.Max.Y = int(fy)
+			return rect, true
+		}
+	}
+	return rect, false
 }
 
 // ParseNoError 解析位置，忽略错误

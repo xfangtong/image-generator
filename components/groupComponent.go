@@ -61,13 +61,26 @@ func (c *GroupComponent) Draw(dc *DrawContext, config interface{}) error {
 		levelMap[c.Level] = append(m, wItem)
 	}
 
+	lastTop := 0
+	lastHeight := 0.0
 	for _, c := range clTemp {
 		di, err := dc.createComponentImage(c.Item)
 		if err != nil {
 			return err
 		}
+		dc.CurrentLeft = di.bgRect.Max.X
+		dc.CurrentTop = di.bgRect.Min.Y
+		if lastTop != dc.CurrentTop {
+			lastHeight = 0
+		}
+		lastHeight = math.Max(float64(lastHeight), float64(di.bgRect.Dy()))
+		dc.LastComponentHeight = int(lastHeight)
+		lastTop = dc.CurrentTop
 		c.di = &di
 	}
+
+	dc.ActualHeight = dc.CurrentTop + int(lastHeight)
+	dc.ActualWidth = dc.Width
 
 	sort.Ints(levelList)
 
@@ -84,6 +97,7 @@ func (c *GroupComponent) Draw(dc *DrawContext, config interface{}) error {
 			if err != nil {
 				return err
 			}
+
 			// dc.GraphicContext.SetColor(bgColor)
 			dc.GraphicContext.DrawRectangle(float64(br.Min.X), float64(br.Min.Y), float64(br.Dx()), float64(br.Dy()))
 			dc.GraphicContext.Clip()
@@ -95,6 +109,8 @@ func (c *GroupComponent) Draw(dc *DrawContext, config interface{}) error {
 			//dc.GraphicContext.ClearRect(br.Min.X, br.Min.Y, br.Max.X, br.Max.Y)
 			draw2dimg.DrawImage(di.image, dc.Image.(draw.Image), draw2d.NewTranslationMatrix(float64(dr.Min.X), float64(dr.Min.Y)), draw.Over, draw2dimg.LinearFilter)
 			//dc.GraphicContext.Restore()
+			//	tmpdc := gg.NewContextForImage(di.image)
+			//tmpdc.SavePNG("./test/xxxx.png")
 		}
 	}
 
@@ -115,7 +131,8 @@ func (c *GroupComponent) Measure(dc *DrawContext, rect image.Rectangle, config i
 	}
 	cl := componentList(clTemp)
 	//sort.Sort(cl)
-
+	lastTop := 0
+	lastHeight := 0.0
 	for _, c := range cl {
 		r1, _, err := dc.MeasureComponent(c.Item)
 		if err != nil {
@@ -123,8 +140,14 @@ func (c *GroupComponent) Measure(dc *DrawContext, rect image.Rectangle, config i
 		}
 		dc.CurrentLeft = r1.Max.X
 		dc.CurrentTop = r1.Min.Y
+		if lastTop != dc.CurrentTop {
+			lastHeight = 0
+		}
+		lastHeight = math.Max(float64(lastHeight), float64(r1.Dy()))
+		dc.LastComponentHeight = int(lastHeight)
 		w = math.Max(w, float64(r1.Max.X))
 		h = math.Max(h, float64(r1.Max.Y))
+		lastTop = dc.CurrentTop
 	}
 
 	mr.Max.X = int(w)

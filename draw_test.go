@@ -108,11 +108,26 @@ func TestTemplatePoster(t *testing.T) {
 	jsonBytes, _ := ioutil.ReadFile("./examples/poster.json")
 	jsonText := string(jsonBytes)
 
-	img, _ := GenerateImageFromTemplate(jsonText, map[string]string{
+	img, _ := GenerateImageFromTemplate(jsonText, map[string]interface{}{
 		"url":    "local://./images/dw.jpg",
 		"avatar": "local://./images/avatar.jpg",
 		"name":   "王五",
 		"tel":    "13098899899",
+	})
+
+	f, _ := os.Create("./test/img_template_poster2.png")
+	defer f.Close()
+	png.Encode(f, img)
+}
+
+func TestDynamicTemplatePoster(t *testing.T) {
+
+	jsonBytes, _ := ioutil.ReadFile("./examples/poster2.yml")
+	jsonText := string(jsonBytes)
+	var imglist = []string{"local://./images/avatar.jpg", "local://./images/avatar.jpg", "local://./images/avatar.jpg", "local://./images/avatar.jpg", "local://./images/avatar.jpg"}
+	img, _ := GenerateImageFromTemplate(jsonText, map[string]interface{}{
+		"imglist": imglist,
+		"qrcode":  "local://./images/avatar.jpg",
 	})
 
 	f, _ := os.Create("./test/img_template_poster2.png")
