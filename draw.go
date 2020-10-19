@@ -54,12 +54,12 @@ func GenerateImage(t ImageTemplate) (image.Image, error) {
 	}
 
 	isAutoHeight := false
-	if w != float64(components.AutoValue) && h == float64(components.AutoValue) {
+	if !hasBgImg && w != float64(components.AutoValue) && h == float64(components.AutoValue) {
 		h = w * 10
 		isAutoHeight = true
 	}
 
-	if w == float64(components.AutoValue) && h == float64(components.AutoValue) {
+	if w == float64(components.AutoValue) && h == float64(components.AutoValue) && !hasBgImg {
 		return nil, fmt.Errorf("宽度和高度不可同时为auto")
 	}
 	if w == float64(components.AutoValue) {
